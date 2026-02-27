@@ -16,8 +16,13 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("accounts/", include('accounts.urls')),
+    path("skills/", include('skils.urls')),
+    path("swaps/", include('swaps.urls')),
+    path("messaging/", include('messaging.urls')),
+    path("", include('accounts.urls')), # this is the link to the homepage, placed inside accounts app
 ]
