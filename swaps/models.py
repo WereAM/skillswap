@@ -16,7 +16,7 @@ class SwapRequests(models.Model):
     ]
 
     sender = models.ForeignKey(
-        User, on_dlete=models.CASCADE,
+        User, on_delete=models.CASCADE,
         related_name='sent_requests'
     )
     
@@ -99,7 +99,7 @@ class Review(models.Model):
 
     # restrict one review per reviewer per session
     class Meta:
-        unique_together = {'session', 'reviewer'}
+        unique_together = ('session', 'reviewer')
 
     def __str__(self):
         return f'{self.reviewer} reviewed {self.reviewee} ({self.rating}/5)'
