@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title_block %}
+    Home
+{% endblock %}
+
+{% block content_block %}
+
+<div>
+    <h1>Swap Skills and Level Up!!</h1>
+    <p class="lead">Exchange skills with people in your community</p>
+
+    {% if user.is_authenticated %}
+    <!-- replace profile with skills once skills is created -->
+        <a href="{% url 'skills:list' %}" class="btn btn-primary">Browse Skills</a>
+    {% else %}
+        <a href="{% url 'accounts:register' %}" class="btn btn-primary me-2">Register</a>
+        <a href="{% url 'accounts:login' %}" class="btn btn-outline-secondary">Login</a>
+    {% endif %}
+</div>
+
+{% endblock %}
