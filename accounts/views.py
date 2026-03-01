@@ -37,10 +37,10 @@ def user_login(request):
 
         if user is not None:
             login(request, user)
-            next_url = request.POST.get('next', 'accounts:profile')
-            return redirect('next_url')
-    else:
-        messages.error(request, 'Invalid username or password.')
+            next_url = request.POST.get('next') or ('accounts:profile')
+            return redirect(next_url)
+        else:
+            messages.error(request, 'Invalid username or password.')
 
     return render(request, 'accounts/login.html')
 

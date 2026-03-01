@@ -23,7 +23,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include('accounts.urls')),
-    path("skills/", include('skils.urls')),
+    path("skills/", include('skills.urls')),
     path("swaps/", include('swaps.urls')),
     path("messaging/", include('messaging.urls')),
     path("", include('accounts.urls')), # this is the link to the homepage, placed inside accounts app
