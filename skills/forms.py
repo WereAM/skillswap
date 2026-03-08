@@ -6,16 +6,27 @@ class SkillForm(forms.ModelForm):
         model = Skill
         fields = ['name', 'description', 'difficulty_level', 'category']
         widgets = {
-            'description': forms.Textarea(attrs={'rows':3}), 
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={
+                'rows': 3,
+                'class': 'form-control'
+            }),
+            'category': forms.Select(attrs={'class': 'form-select'}),
         }
 
 class UserSkillForm(forms.ModelForm):
     class Meta:
         model = UserSkill
-        fields = ['skill', 'skill_type', 'proficiency_level',
+        fields = ['skill_type', 'proficiency_level',
                   'years_of_experience', 'availability_description']
         widgets = {
-            'availability_description': forms.Textarea(attrs={'rows':3}),
+            'skill_type': forms.Select(attrs={'class': 'form-select'}),
+            'proficiency_level': forms.Select(attrs={'class': 'form-select'}),
+            'years_of_experience': forms.NumberInput(attrs={'class': 'form-control'}),
+            'availability_description': forms.Textarea(attrs={
+                'rows': 3,
+                'class': 'form-control'
+            }),
         }
 
 class SkillSearchForm(forms.Form):

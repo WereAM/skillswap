@@ -11,7 +11,6 @@
     <p class="lead">Exchange skills with people in your community</p>
 
     {% if user.is_authenticated %}
-    <!-- replace profile with skills once skills is created -->
         <a href="{% url 'skills:list' %}" class="btn btn-primary">Browse Skills</a>
     {% else %}
         <a href="{% url 'accounts:register' %}" class="btn btn-primary me-2">Register</a>

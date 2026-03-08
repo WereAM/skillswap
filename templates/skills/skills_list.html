@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title_block %}
+Browse Skills 
+{% endblock %}
+
+{% block content_block %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Browse Skills</h2>
+    </div>
+    <div class="col text-end">
+        <a href="{% url 'skills:add' %}" class="btn btn-primary"> Add Skill </a>
+    </div>
+</div>
+
+<!-- Search or filter form -->
+ <div class="card mb-4">
+    <div class="card-body">
+        <form method="GET">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    {{ form.query }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.category }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.skill_type }}
+                </div>
+                <div class="col-md-2">
+                    {{ form.proficiency_level }}
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-outline-primary w-100">Filter</button>
+                </div>
+            </div>
+        </form>
+    </div>
+ </div>
+
+ <!-- List of skills -->
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for user_skill in user_skills %}
+    <div class="col">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h5 class="card-title">
+                        {{ user_skill.skill.name }}
+                    </h5>
+                    <span class="badge {% if user_skill.skill_type == 'offer' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                        {{ user_skill.get_skill_type_display }}
+                    </span>
+                </div>
+                <p class="text-muted small">
+                    {{ user_skill.skill.category }} . {{ user_skill.get_proficiency_level_display }}
+                </p>
+                <p class="card-text">
+                    {{ user_skill.skill.description | truncatewords:20 }}
+                </p>
+            </div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <small class="text-muted">by {{ user_skill.user.username }}</small>
+                <a href="{% url 'skills:detail' user_skill.pk %}" class="btn btn-sm btn-outline-primary">
+                    View
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+        <div class="col-12">
+            <p class="text-muted">No skills found. Be the first to add one!</p>
+        </div>
+    {% endfor %}
+</div>  
+
+{% endblock %}

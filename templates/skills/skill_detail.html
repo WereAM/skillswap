@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title_block %}
+{{ user_skill.skill.name }}
+{% endblock %}
+
+{% block content_block %}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2>{{ user_skill.skill.name }}</h2>
+            <span class="badge fs-6 {% if user_skill.skill_type == 'offer' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                {{ user_skill.get_skill_type_display }}
+            </span>
+        </div>
+        <p class="text-muted">
+            {{ user_skill.skill.category }} .
+            {{ user_skill.get_proficiency_level_display }} .
+            {{ user_skill.years_of_experience }} years experience 
+        </p>
+        <p>{{ user_skill.skill.description }}</p>
+        <h6>Availability</h6>
+        <p>{{ user_skill.availability_description | default:"Not specified" }}</p>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6>Offered by</h6>
+                <h5>{{ user_skill.user.username }}</h5>
+                {% if user.is_authenticated and user != user_skill.user %}
+                    {# <a href="{% url 'swaps:create' user_skill.pk %}" class="btn btn-primary w-100 mt-2"> #}
+                        <button class="btn btn-primary w-100 mt-2" disabled>
+                        Request Swap (Coming Soon)
+                        </button>
+                    <!-- </a> -->
+                    {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<a href="{% url 'skills:list' %}" class="btn btn-outline-secondary mt-3">Back to Skills</a>
+{% endblock %}
