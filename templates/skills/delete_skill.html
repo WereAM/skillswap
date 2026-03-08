@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title_block %}
+Delete Skill
+{% endblock %}
+
+{% block content_block %}
+
+<div class="row justify-content-center">
+    <div class="col-md-5 text-center">
+        <h3>Delete "{{ user_skill.skill.name }}"?</h3>
+        <p class="text-muted">This action cannot be undone.</p>
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger me-2">Yes, delete it</button>
+            <a href="{% url 'skills:my_skills' %}" class="btn btn-outline-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
