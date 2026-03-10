@@ -28,6 +28,9 @@
                             <li><a class="dropdown-item" href="{% url 'skills:my_skills' %}">My Skills</a></li>
                             <li><a class="dropdown-item" href="{% url 'skills:list' %}">Browse Skills</a></li>
                             <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'swaps:inbox' %}">Received Requests</a></li>
+                            <li><a class="dropdown-item" href="{% url 'swaps:sent' %}">Sent Requests</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">Logout</a></li>
                         </ul>
                     </div>        
