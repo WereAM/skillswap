@@ -30,11 +30,11 @@
                 <h6>Offered by</h6>
                 <h5>{{ user_skill.user.username }}</h5>
                 {% if user.is_authenticated and user != user_skill.user %}
-                    {# <a href="{% url 'swaps:create' user_skill.pk %}" class="btn btn-primary w-100 mt-2"> #}
-                        <button class="btn btn-primary w-100 mt-2" disabled>
-                        Request Swap (Coming Soon)
+                    <a href="{% url 'swaps:create' user_skill.pk %}" class="btn btn-primary w-100 mt-2">
+                        <button class="btn btn-primary w-100 mt-2">
+                        Request Swap
                         </button>
-                    <!-- </a> -->
+                    </a>
                     {% endif %}
             </div>
         </div>

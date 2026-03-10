@@ -1,11 +1,11 @@
 from django import forms
 
 from skills.models import UserSkill
-from .models import Session, SwapRequest
+from .models import Session, SwapRequests
 
-class SwapRequestForm(forms.Modelform):
+class SwapRequestForm(forms.ModelForm):
     class Meta:
-        model = SwapRequest
+        model = SwapRequests
         # the user only sets the message and skill
         fields = ['offered_skill', 'message']
         widgets = {
@@ -17,14 +17,14 @@ class SwapRequestForm(forms.Modelform):
             'offered_skill': forms.Select(attrs={'class': 'form-select'}),
         }
 
-        def __init__(self, user, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            # only show the current user's OFFERED skills
-            self.fields['offered_skills'].queryset = UserSkill.objects.filter(
-                user = user,
-                skill_type = 'offer'
-            ). select_related('skill')
-            self.fields['offered_skill'].label = 'Skill you are offering'
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # only show the current user's OFFERED skills
+        self.fields['offered_skill'].queryset = UserSkill.objects.filter(
+            user = user,
+            skill_type = 'offer'
+        ). select_related('skill')
+        self.fields['offered_skill'].label = 'Skill you are offering'
 
 class SessionForm(forms.ModelForm):
     class Meta:

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title_block %}
+Request Swap
+{% endblock %}
+
+{% block content_block %}
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <h2 class="mb-4">Request a Skill Swap</h2>
+
+        <!-- show what sskills a user is requesting -->
+         <div class="card mb-4 border-primary">
+            <div class="card=header bg-primary text-whiite">
+                You are requesting:
+            </div>
+            <div class="card-body">
+                <h5>{{ requested_skill.skill.name }}</h5>
+                <p class="text-muted mb-1">
+                    From: <strong>{{ requested_skill.user.username }}</strong>
+                </p>
+                <p class="text-muted">
+                    Proficiency: {{ requested_skill.get_proficiency_level_display }}
+                </p>
+            </div>
+         </div>
+
+         <form method="POST">
+            {% csrf_token %}
+            <div class="card mb-3">
+                <div class="card-header">Whats are you offering in return?</div>
+                <div class="card-body">
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger small">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Send Request</button>
+                <a href="{% url 'skills:detail' requested_skill.pk %}" 
+                    class="btn btn-outline-secondary"> Cancel </a>
+            </div>
+         </form>
+    </div>
+</div>
+
+{% endblock %}
