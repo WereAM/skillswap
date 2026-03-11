@@ -1,7 +1,7 @@
 from django import forms
 
 from skills.models import UserSkill
-from .models import Session, SwapRequests
+from .models import Session, SwapRequests, Review
 
 class SwapRequestForm(forms.ModelForm):
     class Meta:
@@ -42,5 +42,21 @@ class SessionForm(forms.ModelForm):
             'notes' : forms.Textarea(attrs={
                 'rows' : 3,
                 'class' : 'form-control'
+            }),
+        }
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'comment']
+        widgets = {
+            'rating': forms.Select(
+                choices=[(i, f'{i} ⭐') for i in range(1, 6)],
+                attrs={'class': 'form-select'}
+            ),
+            'comment': forms.Textarea(attrs={
+                'rows': 3,
+                'class': 'form-control',
+                'placeholder': 'Share your rating of this swap...'
             }),
         }

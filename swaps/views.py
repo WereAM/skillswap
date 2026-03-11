@@ -2,8 +2,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from skills.models import UserSkill
-from swaps.forms import SessionForm, SwapRequestForm
-from .models import Session, SwapRequests
+from swaps.forms import SessionForm, SwapRequestForm, ReviewForm
+from .models import Session, SwapRequests, Review
+from accounts.models import UserProfile
 
 
 # Create your views here.
@@ -80,10 +81,17 @@ def swap_detail(request, pk):
     
     session = None
     session_form = None
+    # only show review button if there is no review yet
+    user_has_reviewed = False
 
     try:
         # check if a session already exists for this swap
         session = swap.session
+        # check if user alredy reviewed
+        user_has_reviewed = Review.objects.filter(
+            session = session,
+            reviewer = request.user
+        ).exists()
     except Session.DoesNotExist:
         if swap.status == 'accepted':
             if request.method == 'POST':
@@ -101,6 +109,7 @@ def swap_detail(request, pk):
         'swap': swap,
         'session': session,
         'session_form': session_form,
+        'user_has_reviewed': user_has_reviewed,
     })
 
 @login_required
@@ -144,3 +153,83 @@ def cancel_swap(request, pk):
     swap.save()
     messages.success(request, "Swap request cancelled!")
     return redirect('swaps:sent')
+
+# leave a review
+@login_required
+def leave_review(request, session_id):
+    # get the session
+    session = get_object_or_404(Session, pk=session_id)
+    swap = session.swap_request
+
+    # ensure only participants can leave reviews
+    if request.user != swap.sender and request.user != swap.receiver:
+        messages.error(request, "You can't review this session.")
+        return redirect('swaps:inbox')
+    
+    # only review a completed session
+    if session.status != 'completed':
+        messages.error(request, "You can only review completed sessions.")
+        return redirect('swaps:detail', pk=swap.pk) 
+    
+    # check if a review already exists
+    already_reviewed = Review.objects.filter(
+        session = session,
+        reviewer = request.user
+    ).exists()
+
+    if already_reviewed:
+        messages.warning(request, "You have already reviewed this session.")
+        return redirect('swaps:detail', pk=swap.pk)
+    
+    # make reviewee the other participant
+    reviewee = swap.receiver if request.user == swap.sender else swap.sender
+
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.session = session
+            review.reviewer = request.user
+            review.reviewee = reviewee
+            review.save()
+
+            # update the rating average
+            update_rating(reviewee)
+
+            messages.success(request, f'Review left for {reviewee.username}!')
+            return redirect('swaps:detail', pk = swap.pk)
+        else:
+            form = ReviewForm()
+
+        return render(request, 'swaps/leave_review.html', {
+            'form': form,
+            'session': session,
+            'reviewee': reviewee,
+        })
+    
+    # function to calculate and update the average ratings
+def update_rating(user):
+    from django.db.models import Avg
+    reviews = Review.objects.filter(reviewee=user)
+    avg = reviews.aggregate(Avg('rating'))['rating__avg']
+
+    profile, created = UserProfile.objects.get_or_create(user=user)
+    profile.rating_average = round(avg, 2) if avg else 0
+    profile.save()
+
+# session status -> to mark sessions as completed so reviews can be left
+@login_required
+def complete_session(request, session_id):
+    session = get_object_or_404(Session, pk=session_id)
+    swap = session.swap_request
+
+    # only participants can mark a session as complete
+    if request.user != swap.sender and request.user != swap.receiver:
+        messages.error(request, "You don't have permission to do this.")
+        return redirect('swaps:inbox')
+    
+    session.status = 'completed'
+    session.save()
+    messages.success(request, 'Session completed!')
+    return redirect('swaps:detail', pk=swap.pk)
+
