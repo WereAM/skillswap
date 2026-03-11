@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title_block %}
+Add Skill
+{% endblock %}
+
+{% block content_block %}
+
+<div class="row justify-content-center">
+    <div class ='col-md-7'>
+        <h2 class="mb-4">Add a Skill</h2>
+        <form method = 'POST'>
+            {% csrf_token %}
+            <div class="card mb-3">
+                <div class="card-header">Skill Details</div>
+                <div class="card-body">
+                    {% for field in skill_form %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{field }}
+                        {% if field.errors %}
+                            <div class="text-danger small">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class=" mb-3">
+                <div class="card-header"> Your Experience</div>
+                <div class="card-body">
+                    {% for field in user_skill_form %}
+                    {% if field.name != 'skill' %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label}}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger small">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Add Skill</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

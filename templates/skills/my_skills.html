@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title_block %}
+My Skills
+{% endblock %}
+
+{% block content_block %}
+
+<div class="row mb-4">
+    <div class="col">
+        <h2>My Skills</h2>
+    </div>
+    <div class="col text-end">
+        <a href="{% url 'skills:add' %}" class="btn btn-primary"> Add Skill </a>
+    </div>
+</div>
+
+{% if user_skills %}
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Skill</th>
+                <th>Type</th>
+                <th>Proficiency</th>
+                <th>Experience</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for us in user_skills %}
+            <tr>
+                <td>{{ us.skill.name }}</td>
+                <td>
+                    <span class="badge 
+                    {% if us.skill_type == 'offer' %}bg-success
+                    {% else %}bg-warning text-dark
+                    {% endif %}">
+                        {{ us.get_skill_type_display }}
+                    </span> </td>
+                <td>{{ us.get_proficiency_level_display }}</td>
+                <td>{{ us.years_of_experience }} yrs</td>
+                <td>
+                    <a href="{% url 'skills:edit' us.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    <a href="{% url 'skills:delete' us.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+    <p class="text-muted">You haven't addedd any skills yet.
+        <a href="{% url 'skills:add' %}">Add one now!</a>
+    </p>
+{% endif %}
+
+{% endblock %}
