@@ -198,14 +198,14 @@ def leave_review(request, session_id):
 
             messages.success(request, f'Review left for {reviewee.username}!')
             return redirect('swaps:detail', pk = swap.pk)
-        else:
-            form = ReviewForm()
+    else:
+        form = ReviewForm()
 
-        return render(request, 'swaps/leave_review.html', {
-            'form': form,
-            'session': session,
-            'reviewee': reviewee,
-        })
+    return render(request, 'swaps/leave_review.html', {
+        'form': form,
+        'session': session,
+        'reviewee': reviewee,
+    })
     
     # function to calculate and update the average ratings
 def update_rating(user):

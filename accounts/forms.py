@@ -16,3 +16,11 @@ class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ['bio', 'location', 'profile_picture']
+        widgets = {
+            'bio': forms.Textarea(attrs={
+                'rows': 3,
+                'class': 'form-control'
+            }),
+            'location': forms.TextInput(attrs={'class': 'form-control'}),
+            'profile_picture': forms.FileInput(attrs={'class': 'form-control'}),
+        }
