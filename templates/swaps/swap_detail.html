@@ -92,8 +92,12 @@ Swap Details
         <!-- show any existing sessions -->
         {% if session %}
             <div class="card mt-4 border-success">
-                <div class="card-header bg-success text-white">
-                    Session Scheduled
+                <div class="card-header bg-success text-white d-flex justify-content-between">
+                    <span>Session Scheduled</span>
+                    <!-- completion status -->
+                    <span class="badge bg-light text-dark">
+                        {{ session.get_status_display }}
+                    </span>
                 </div>
                 <div class="card-body">
                     <p><strong>Date:</strong> 
@@ -110,10 +114,30 @@ Swap Details
                     {% if session.notes %}
                         <p><strong>Notes:</strong> {{ session.notes }}</p>
                     {% endif %}
+
+                    <!-- completion button -->
+                    {% if session.status == 'scheduled' %}
+                        <a href="{% url 'swaps:complete_session' session.pk %}"
+                            class="btn btn-success mt-2">
+                            Mark Session as Completed
+                        </a>
+                    {% endif %}
+
+                    <!-- review button -->
+                    {% if sesion.status == 'completed' %}
+                        {% if not user_has_reviewed %}
+                            <a href="{% url 'swaps:leave_review' session.pk %}"
+                                class="btn btn-primary mt-2">
+                                Leave a Review
+                            </a>
+                        {% else %}
+                            <p class="text-success mt-2">You have reviewed this session.</p>
+                        {% endif %}
+                    {% endif %}
                 </div>
             </div>
         {% endif %}
-    </div>\
+    </div>
 
     <!-- sidebar -->
      <div class="col-md-4">

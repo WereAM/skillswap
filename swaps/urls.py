@@ -16,5 +16,7 @@ urlpatterns = [
     path('<int:pk>/accept/', views.accept_swap, name='accept'),
     path('<int:pk>/deny/', views.deny_swap, name='deny'),
     path('<int:pk>/cancel/', views.cancel_swap, name='cancel'),
-    
+    # new review and session completeion
+    path('session/<int:session_id>/complete/', views.complete_session, name='complete_session'),
+    path('session/<int:session_id>/review/', views.leave_review, name='leave_review'),
 ]
