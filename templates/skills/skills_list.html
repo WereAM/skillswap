@@ -61,7 +61,11 @@ Browse Skills
                 </p>
             </div>
             <div class="card-footer d-flex justify-content-between align-items-center">
-                <small class="text-muted">by {{ user_skill.user.username }}</small>
+                <small class="text-muted">
+                    by <a href="{% url 'accounts:public_profile' user_skill.user.username %}">
+                        {{ user_skill.user.username }}
+                    </a>
+                </small>
                 <a href="{% url 'skills:detail' user_skill.pk %}" class="btn btn-sm btn-outline-primary">
                     View
                 </a>
