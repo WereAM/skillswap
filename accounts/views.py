@@ -1,9 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.contrib import messages
 from .forms import RegisterForm, UserProfileForm
 from .models import UserProfile
+from skills.models import UserSkill
+from swaps.models import Review
 
 # Create your views here.
 def home(request):
@@ -64,8 +67,39 @@ def edit_profile(request):
             form.save()
             messages.success(request, 'Profile updated')
             return redirect('accounts:profile')
-        else:
-            form = UserProfileForm(instance=profile)
+        return render(request, 'accounts/edit_profile.html', {'form': form})
+    else:
+        form = UserProfileForm(instance=profile)
 
-        return render(request, 'accounts/edit_profile.htnl', {'form':form})
+    return render(request, 'accounts/edit_profile.html', {'form':form})
+    
+@login_required
+def public_profile(request, username):
+    # get the user
+    viewed_user = get_object_or_404(User, username=username)
+    profile, created = UserProfile.objects.get_or_create(user = viewed_user)
+
+    # get the user's skills
+    offered_skills = UserSkill.objects.filter(
+        user = viewed_user,
+        skill_type = 'offer'
+    ).select_related('skill')
+
+    requested_skills = UserSkill.objects.filter(
+        user = viewed_user,
+        skill_type = 'request'
+    ).select_related('skill')
+
+    # get their reviews
+    reviews = Review.objects.filter(
+        reviewee = viewed_user
+    ).select_related('reviewer').order_by('-created_at')
+
+    return render(request, 'accounts/public_profile.html', {
+        'viewed_user' : viewed_user,
+        'profile' : profile,
+        'offered_skills' : offered_skills,
+        'requested_skills' : requested_skills,
+        'reviews' : reviews,
+    })
 

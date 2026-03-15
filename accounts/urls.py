@@ -10,4 +10,6 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('profile/', views.profile, name='profile'),
     path('profile/edit/', views.edit_profile, name='edit_profile'),
+    # a public profile that others can see
+    path('user/<str:username>/', views.public_profile, name='public_profile'),
 ]

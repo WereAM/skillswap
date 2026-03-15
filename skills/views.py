@@ -6,6 +6,7 @@ from skills.forms import SkillForm, SkillSearchForm, UserSkillForm
 from skills.models import Skill, UserSkill
 
 
+
 # Create your views here.
 def skill_list(request):
     form = SkillSearchForm(request.GET)
