@@ -20,7 +20,12 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <h5>{{ swap.sender.username }} wants to swap!</h5>
+                    <h5>
+                        <a href="{% url 'accounts:public_profile' swap.sender.username %}">
+                            {{ swap.sender.username }}
+                        </a>
+                         wants to swap!
+                    </h5>
                     <p class="mb-1">
                         <!-- What they're offering -->
                         <span class="badge bg-success">Offering</span>

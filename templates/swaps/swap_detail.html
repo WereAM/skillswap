@@ -124,7 +124,7 @@ Swap Details
                     {% endif %}
 
                     <!-- review button -->
-                    {% if sesion.status == 'completed' %}
+                    {% if session.status == 'completed' %}
                         {% if not user_has_reviewed %}
                             <a href="{% url 'swaps:leave_review' session.pk %}"
                                 class="btn btn-primary mt-2">
