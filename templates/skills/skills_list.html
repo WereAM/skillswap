@@ -49,25 +49,24 @@ Browse Skills
     {% for user_skill in user_skills %}
     <div class="col">
         <div class="skill-card">
-            
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <h5 class="skill-card-title">
-                        {{ user_skill.skill.name }}
-                    </h5>
-                    <span class="badge {% if user_skill.skill_type == 'offer' %}bg-success{% else %}bg-warning {% endif %}">
-                        {{ user_skill.get_skill_type_display }}
-                    </span>
-                </div>
-                <p class="skill-card-meta">
-                    {{ user_skill.skill.category }} . {{ user_skill.get_proficiency_level_display }}
-                </p>
-                <p class="skill-card-description">
-                    {{ user_skill.skill.description | truncatewords:20 }}
-                </p>
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="skill-card-title">
+                    {{ user_skill.skill.name }}
+                </h5>
+                <span class="badge {% if user_skill.skill_type == 'offer' %}bg-success{% else %}bg-warning {% endif %}">
+                    {{ user_skill.get_skill_type_display }}
+                </span>
             </div>
+            <p class="skill-card-meta">
+                {{ user_skill.skill.category }} . {{ user_skill.get_proficiency_level_display }}
+            </p>
+            <p class="skill-card-description">
+                {{ user_skill.skill.description | truncatewords:20 }}
+            </p>
             <div class="skill-card-footer">
                 <a href="{% url 'accounts:public_profile' user_skill.user.username %}"
                     class="text-muted small">
+                    by {{ user_skill.user.username }}
                 </a>
                 <a href="{% url 'skills:detail' user_skill.pk %}" 
                     class="btn btn-sm btn-outline-primary">
