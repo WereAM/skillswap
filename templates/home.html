@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title_block %}
     Home
@@ -6,16 +7,65 @@
 
 {% block content_block %}
 
-<div>
-    <h1>Swap Skills and Level Up!!</h1>
-    <p class="lead">Exchange skills with people in your community</p>
+<div class="hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1>Swap Skills and <br><span>Level Up!!</span></h1>
+                <p class="lead">Exchange skills with people in your community.
+                    Offer what you know, learn what you don't.
+                </p>
+                <div class="hero-buttons">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'skills:list' %}" class="btn btn-accent btn-lg">Browse Skills</a>
+                        <a href="{% url 'skills:add' %}" class="btn btn-outline-light btn-lg"> Add Your Skills</a>
+                    {% else %}
+                        <a href="{% url 'accounts:register' %}" class="btn btn-accent btn-lg">Sign Up</a>
+                        <a href="{% url 'accounts:login' %}" class="btn btn-outline-light btn-lg">Sign In</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-flex justify-content-center">
+                <!-- Decorative swap motif -->
+                <div style="font-size:8rem; opacity:0.15; 
+                            font-family:'Playfair Display',serif;
+                            color:white; user-select:none;">
+                    ⇄
+                </div>
+            </div>
+        </div>  
+    </div>  
+</div>
 
-    {% if user.is_authenticated %}
-        <a href="{% url 'skills:list' %}" class="btn btn-primary">Browse Skills</a>
-    {% else %}
-        <a href="{% url 'accounts:register' %}" class="btn btn-primary me-2">Register</a>
-        <a href="{% url 'accounts:login' %}" class="btn btn-outline-secondary">Login</a>
-    {% endif %}
+<!-- Instructions -->
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h2>How SkillSwap Works:</h2>
+        <p class="text-muted">Three simple steps to start exchanging skills</p>
+    </div>
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="card p-4">
+                <div style="font-size:2.5rem; margin-bottom:1rem;">📋</div>
+                <h5>1. List Your Skills</h5>
+                <p class="text-muted">Share what you can teach and what you want to learn.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4">
+                <div style="font-size:2.5rem; margin-bottom:1rem;">🔍</div>
+                <h5>2. Find a Match</h5>
+                <p class="text-muted">Browse skills and find someone whose offering matches your needs.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4">
+                <div style="font-size:2.5rem; margin-bottom:1rem;">⇄</div>
+                <h5>3. Swap & Grow</h5>
+                <p class="text-muted">Send a swap request, schedule a session, and start learning.</p>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}
