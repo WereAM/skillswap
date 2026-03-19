@@ -88,6 +88,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "skillswap.wsgi.application"
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
