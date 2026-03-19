@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'skillswap-web.up.railway.app']
 
 # Add Railway domain to allowed hosts
 RAILWAY_HOST = os.environ.get('RAILWAY_STATIC_URL', '')
@@ -90,12 +90,13 @@ WSGI_APPLICATION = "skillswap.wsgi.application"
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.railway.app',
+    'https://skillswap-web.up.railway.app',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
 ]
 
 
-# Database
+# Database  
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 import dj_database_url
 DATABASES = {
