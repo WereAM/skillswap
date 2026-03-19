@@ -1,1 +1,1 @@
-web: gunicorn skillswap.wsgi --log-file -
+web: python -m gunicorn skillswap.wsgi --log-file -
