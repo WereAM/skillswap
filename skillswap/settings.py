@@ -10,9 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import dj_database_url
 from pathlib import Path
 import os
-
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -26,17 +26,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
-"django-insecure-ch5co59gp!)hn-4^m*_7-0&+!adsi$%3z45@&ki144w1r7o=b@"
+# SECRET_KEY = "django-insecure-ch5co59gp!)hn-4^m*_7-0&+!adsi$%3z45@&ki144w1r7o=b@"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'skillswap-web.up.railway.app']
 
+# Add Railway domain to allowed hosts
 RAILWAY_HOST = os.environ.get('RAILWAY_STATIC_URL', '')
 if RAILWAY_HOST:
     ALLOWED_HOSTS.append(RAILWAY_HOST)
 
+# Also allow all Railway domains as a fallback
 ALLOWED_HOSTS.append('.railway.app')
 
 # Application definition
@@ -87,10 +89,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "skillswap.wsgi.application"
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'https://skillswap-web.up.railway.app',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
 
-# Database
+
+# Database  
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-import dj_database_url
+print(f"DATABASE_URL: {os.environ.get('DATABASE_URL', 'NOT SET')}")
 
 DATABASES = {
     'default': dj_database_url.config(
@@ -98,13 +107,6 @@ DATABASES = {
         conn_max_age=600
     )
 }
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.sqlite3",
-#         "NAME": BASE_DIR / "db.sqlite3",
-#     }
-# }
 
 
 # Password validation
@@ -155,6 +157,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # how to redirect after login
 LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'accounts:profile'
+
+# Default primary key
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Security settings - only active in production
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
 
 # Default primary key
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
