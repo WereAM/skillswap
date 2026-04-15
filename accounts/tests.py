@@ -59,6 +59,12 @@ class AuthTest(TestCase):
         response = self.client.get(reverse('accounts:profile'))
         self.assertEqual(response.status_code, 200)
 
+    # Profile page should redirect unauthenticated users to login
+    def test_profile_requires_login(self):
+        response = self.client.get(reverse('accounts:profile'))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/login', response.url)
+
     # Editing profile should update bio and location
     def test_edit_profile(self):
         
@@ -73,3 +79,19 @@ class AuthTest(TestCase):
         profile = UserProfile.objects.get(user=self.user)
         self.assertEqual(profile.bio, 'I love teaching Python!')
         self.assertEqual(profile.location, 'Glasgow')
+
+    # Public profile pages should be visible for all users
+    def test_public_profile_loads(self):
+        response = self.client.get(
+            reverse('accounts:public_profile',
+            kwargs={'username': 'testuser'})
+        )
+        self.assertEqual(response.status_code, 200)
+
+    # Public profile should return error 404 for users that don't exist
+    def test_public_profile_404_for_nonexistent_users(self):
+        respone = self.client.get(
+            reverse('accounts:public_profile',
+            kwargs={'username': 'doesnotexist'})
+        )
+        self.assertEqual(response.status_code, 404)
