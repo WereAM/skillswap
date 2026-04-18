@@ -36,6 +36,16 @@
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'swaps:inbox' %}">Received Requests</a></li>
                             <li><a class="dropdown-item" href="{% url 'swaps:sent' %}">Sent Requests</a></li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'messaging:inbox' %}">
+                                    Messages
+                                    {% if unread_messages_count > 0 %}
+                                        <span class="badge bg-primary ms-1">
+                                            {{ unread_messages_count }}
+                                        </span>
+                                    {% endif %}
+                                </a>
+                            </li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-danger" href="{% url 'accounts:logout' %}">Logout</a></li>
                         </ul>
