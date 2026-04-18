@@ -578,3 +578,18 @@ a:hover { color: var(--primary-dark); }
     .hero-buttons { flex-direction: column; }
     .hero-buttons .btn { width: 100%; text-align: center; }
 }
+
+/* message bubbles */
+.message-bubble {
+    word-wrap: break-word;
+}
+
+.message-sent {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+.message-received {
+    background-color: var(--bg);
+    color: var(--text);
+}

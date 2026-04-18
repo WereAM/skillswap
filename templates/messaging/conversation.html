@@ -33,7 +33,7 @@
                 style="height: 450px; overflow-y: auto;"
                 id="message-thread">
 
-                {% if messages %}
+                {% if chat_messages %}
                     {% for message in chat_messages %}
                     <div class="d-flex mb-3
                         {% if message.sender == request.user %}
@@ -43,15 +43,12 @@
                         {% endif %}">
 
                         <div style="max-width:70%;">
-                            <div class="p-3 rounded-3
+                            <div class="p-3 rounded-3 message-bubble
                                 {% if message.sender == request.user %}
-                                    bg-primary text-white
+                                    message-sent
                                 {% else %}
-                                    bg-light
-                                {% endif %}"
-                                style="{% if message.sender == request.user %}
-                                            background-color:var(--primary) !important;
-                                        {% endif %}">
+                                    message-received
+                                {% endif %}">
                                 {{ message.content }}
                             </div>  
                             <small class="text-muted d-block mt-1
@@ -60,7 +57,7 @@
                                 {% endif %}">
                                 {{ message.sent_at|date:"M d, H:i" }}
                                 {% if message.sender == request.user %}
-                                    . {% if message.is_read %}✓✓{% else %}✓{% endif %}
+                                    .{% if message.is_read %}✓✓{% else %}✓{% endif %}
                                 {% endif %}
                             </small> 
                         </div>
