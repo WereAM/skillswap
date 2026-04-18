@@ -34,7 +34,7 @@
                 id="message-thread">
 
                 {% if messages %}
-                    {% for message in messages %}
+                    {% for message in chat_messages %}
                     <div class="d-flex mb-3
                         {% if message.sender == request.user %}
                             justify-content-end
