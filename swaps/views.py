@@ -237,6 +237,13 @@ def leave_review(request, session_id):
             # update the rating average
             update_rating(reviewee)
 
+            # notification
+            create_notification(
+                user=reviewee,
+                notification_type='new_review',
+                content=f'{request.user.username} left you a {review.rating} ⭐ review!'
+            )
+
             messages.success(request, f'Review left for {reviewee.username}!')
             return redirect('swaps:detail', pk = swap.pk)
     else:
