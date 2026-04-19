@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from messaging.forms import MessageForm
 from .models import Message
+from .utils import create_notification
 
 # Create your views here.
 @login_required
@@ -84,6 +85,15 @@ def conversation(request, username):
             message.sender=request.user
             message.receiver=other_user
             message.save()
+
+            # notification
+            create_notification(
+                user=other_user,
+                notification_type='new_message',
+                content=f'New message from {request.user.username}:'
+                        f'{message.content[:50]} {"..." if len(message.content) > 50 else ""}'
+            )
+
             return redirect('messaging:conversation', username=username)
     else:
         form = MessageForm()
