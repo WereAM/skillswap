@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title_block %}
+    Notifications
+{% endblock %}
+
+{% block content_block %}
+
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h2>Notifications</h2>
+        <p>Stay up to date with your swaps and messages</p>
+    </div>
+    {% if notifications %}
+        <a href="{% url 'messaging:mark_all_read' %}"
+            class="btn btn-outline-secondary btn-sm">
+            Mark all as read
+        </a>
+    {% endif %}
+</div>
+
+{% if notifications %}
+    {% for notification in notifications %}
+    <div class="swap-card mb-2 d-flex justify-content-between align-items-center
+                {% if not notification.is_read %}border-primary{% endif %}">
+        <div class="d-flex align-items-center gap-3">
+            <!-- icons for different notification types -->
+            <span style="font-size: 1.5rem;">
+                {% if notification.notification_type == 'swap_request' %} 🔄
+                {% elif notification.notification_type == 'swap_accepted' %} ✅
+                {% elif notification.notification_type == 'swap_rejected' %} ❌
+                {% elif notification.notification_type == 'new_message' %} 💬
+                {% elif notification.notification_type == 'new_review' %} ⭐
+                {% elif notification.notification_type == 'session_scheduled' %} 📅
+                {% else %} 🔔
+                {% endif %}
+            </span>
+            <div>
+                <p class="mb-0
+                    {% if not notification.is_read %}fw-bold{% endif %}">
+                    {{ notification.content }}
+                </p>  
+                <small class="text-muted">
+                    {{ notification.created_at|date:"M d, Y H:i" }}
+                </small> 
+            </div>
+        </div>
+
+        {% if not notification.is_read %}
+            <a href="{% url 'messaging:mark_read' notification.pk %}"
+                class="btn btn-sm btn-outline-primary flex-shrink-0">
+                Mark as read
+            </a>
+        {% endif %}
+    </div>
+    {% endfor %}
+{% else %}
+    <div class="text-center py-5">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🔔</div>
+        <h5>No notifications yet</h5>
+        <p class="text-muted">
+            Start swapping skills to see activity here!
+        </p>
+    </div>
+{% endif %}
+
+{% endblock %}

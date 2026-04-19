@@ -5,6 +5,7 @@ from skills.models import UserSkill
 from swaps.forms import SessionForm, SwapRequestForm, ReviewForm
 from .models import Session, SwapRequests, Review
 from accounts.models import UserProfile
+from messaging.utils import create_notification
 
 
 # Create your views here.
@@ -39,6 +40,16 @@ def create_swap(request, skill_id):
             swap.requested_skill = requested_skill
             swap.status = 'pending'
             swap.save()
+
+            # notification
+            create_notification(
+                user=swap.receiver,
+                notification_type='swap_request',
+                content=f'{request.user.username} sent you a swap request - '
+                        f'{swap.offered_skill.skill.name} ⇄ '
+                        f'{swap.requested_skill.skill.name}'
+            )
+
             messages.success(request, "Swap request sent!")
             return redirect('swaps:sent')
     else:
@@ -123,6 +134,16 @@ def accept_swap(request, pk):
     
     swap.status = 'accepted'
     swap.save()
+
+    # notification
+    create_notification(
+        user=swap.sender,
+        notification_type='swap_accepted',
+        content=f'{request.user.username} accepted your swap request - '
+                f'{swap.offered_skill.skill.name} ⇄ '
+                f'{swap.requested_skill.skill.name} '
+    )
+
     messages.success(request, "Swap request accepted!")
     return redirect('swaps:detail', pk=pk)
 
@@ -137,6 +158,16 @@ def deny_swap(request, pk):
     
     swap.status = 'rejected'
     swap.save()
+
+    # notification
+    create_notification(
+        user=swap.sender,
+        notification_type='swap_rejected',
+        content=f'{request.user.username} declined your swap request - '
+                f'{swap.offered_skill.skill.name} ⇄ '
+                f'{swap.requested_skill.skill.name} '
+    )
+
     messages.success(request, "Swap request denied!")
     return redirect('swaps:inbox')
 
@@ -151,6 +182,16 @@ def cancel_swap(request, pk):
     
     swap.status = 'cancelled'
     swap.save()
+
+    # notification
+    create_notification(
+        user=swap.receiver,
+        notification_type='swap_rejected',
+        content=f'{request.user.username} cancelled their swap request - '
+                f'{swap.offered_skill.skill.name} ⇄ '
+                f'{swap.requested_skill.skill.name} '
+    )
+
     messages.success(request, "Swap request cancelled!")
     return redirect('swaps:sent')
 
@@ -196,6 +237,13 @@ def leave_review(request, session_id):
             # update the rating average
             update_rating(reviewee)
 
+            # notification
+            create_notification(
+                user=reviewee,
+                notification_type='new_review',
+                content=f'{request.user.username} left you a {review.rating} ⭐ review!'
+            )
+
             messages.success(request, f'Review left for {reviewee.username}!')
             return redirect('swaps:detail', pk = swap.pk)
     else:
@@ -230,6 +278,16 @@ def complete_session(request, session_id):
     
     session.status = 'completed'
     session.save()
+
+    # notification
+    other_user = swap.receiver if request.user == swap.sender else swap.sender
+    create_notification(
+        user=other_user,
+        notification_type='session_scheduled',
+        content=f'{request.user.username} marked your session as completed. '
+                f'Leave a review!'
+    )
+
     messages.success(request, 'Session completed!')
     return redirect('swaps:detail', pk=swap.pk)
 
