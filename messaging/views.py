@@ -111,7 +111,7 @@ def notifications(request):
         user=request.user
     ).order_by('-created_at')
 
-    return render(request, 'messaging/notification.html', {
+    return render(request, 'messaging/notifications.html', {
         'notifications': user_notifications,
     })
 
