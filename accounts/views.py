@@ -4,9 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from .forms import RegisterForm, UserProfileForm
-from .models import UserProfile
+from .models import UserProfile, EmailVerificationToken
 from skills.models import UserSkill
 from swaps.models import Review
+from .email_utils import send_verification_email
 
 # Create your views here.
 def home(request):
@@ -19,15 +20,69 @@ def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            user.is_active = False
+            user.save()
+
             UserProfile.objects.create(user=user)
-            login(request, user)
-            messages.success(request, 'Account created successfully!')
-            return redirect('accounts:profile')
+            send_verification_email(user)
+
+            messages.info(
+                request,
+                'Account created. Please check your email to verify your account.'
+            )
+            return redirect('accounts:login')
     else:
         form = RegisterForm()
 
     return render(request, 'accounts/register.html', {'form': form})
+    
+def verify_email(request, token):
+    try:
+        verification = EmailVerificationToken.objects.get(token=token)
+    except EmailVerificationToken.DoesNotExist:
+        messages.error(request, 'Invalid verification link.')
+        return redirect('accounts:login')
+    
+    if verification.is_expired():
+        verification.delete()
+        messages.error(
+            request,
+            'Verification link has expired. Please register again.'
+        )
+        return redirect('accounts:register')
+    
+    # activate the account
+    user = verification.user
+    user.is_active = True
+    user.save()
+
+    verification.delete()
+
+    messages.success(request, 'Email verified successfully! Proceed to log in.')
+    return redirect('accounts:login')
+
+def resend_verification(request):
+    '''
+    Request new verification email if
+    token expired or didn't receive it
+    '''
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email, is_active=False)
+            send_verification_email(user)
+            messages.success(
+                request,
+                'Verification email resent. Please check your inbox.'
+            )
+        except User.DoesNotExist:
+            messages.info(
+                request,
+                'If your email exists and is unverified, '
+                'we sent a new verification link.'
+            )
+    return render(request, 'accounts/resend_verification.html')
 
 def user_login(request):
     if request.user.is_authenticated:
