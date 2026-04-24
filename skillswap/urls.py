@@ -26,5 +26,6 @@ urlpatterns = [
     path("skills/", include('skills.urls')),
     path("swaps/", include('swaps.urls')),
     path("messaging/", include('messaging.urls')),
-    path("", include('accounts.urls')), # this is the link to the homepage, placed inside accounts app
+    path("", include('accounts.urls')), # homepage
+    path('auth/', include('allauth.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

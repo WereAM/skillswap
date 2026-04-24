@@ -50,6 +50,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # allauth
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
     # added apps
     'accounts',
     'messaging',
@@ -57,9 +63,46 @@ INSTALLED_APPS = [
     'swaps',
 ]
 
+# for django.contrib.sites
+SITE_ID = 1
+
+# allauth configurations
+AUTHENTICATION_BACKENDS = [
+    # default django auth
+    'django.contrib.auth.backends.ModelBackend',
+    # allauth auth
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# allauth settings
+ACCOUNT_LOGIN_METHODS = {'email', 'username'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+
+# google OAuth settings
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True,
+    }
+}
+
+# redirect after social login
+SOCIALACCOUNT_LOGIN_ON_GET = True
+LOGIN_REDIRECT_URL = 'accounts:profile'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'accounts:login'
+
+# auto create UserProfile after social login
+SOCIALACCOUNT_ADAPTER = 'accounts.adapters.SocialAccountAdapter'
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    # Whitenoise
     'whitenoise.middleware.WhiteNoiseMiddleware',
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -67,6 +110,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "skillswap.urls"
