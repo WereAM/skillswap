@@ -70,7 +70,7 @@ SITE_ID = 1
 AUTHENTICATION_BACKENDS = [
     # default django auth
     'django.contrib.auth.backends.ModelBackend',
-    # allauth auth
+    # allauth auth(social login)
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
