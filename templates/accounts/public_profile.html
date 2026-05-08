@@ -47,6 +47,12 @@
                         class="btn btn-primary w-100 mt-2">
                         Browse Their Skills
                     </a>
+
+                    <!-- send message button -->
+                     <a href="{% url 'messaging:conversation' viewed_user.username %}"
+                        class="btn btn-outline-primary w-100 mt-2">
+                        Send Message
+                    </a>
                 {% endif %}
             </div>
         </div>
@@ -143,7 +149,7 @@
                     </div>
                     {% endfor %}
                 {% else %}
-                    <p class="text-muted">No reviews ywt.</p>
+                    <p class="text-muted">No reviews yet.</p>
                 {% endif %} 
             </div>          
         </div>
