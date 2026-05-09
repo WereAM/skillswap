@@ -6,12 +6,17 @@ from django.contrib import messages
 from .forms import RegisterForm, UserProfileForm
 from .models import UserProfile, EmailVerificationToken
 from skills.models import UserSkill
-from swaps.models import Review
+from swaps.models import Review, SwapRequests
 from .email_utils import send_verification_email
 
-# Create your views here.
 def home(request):
-    return render(request, 'home.html')
+    # stats
+    context = {
+        'total_skills': UserSkill.objects.count(),
+        'total_users': User.objects.filter(is_active=True).count(),
+        'total_swaps': SwapRequests.objects.filter(status='accepted').count(),
+    }
+    return render(request, 'home.html', context)
 
 def register(request):
     if request.user.is_authenticated:
