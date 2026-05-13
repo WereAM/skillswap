@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     # added apps
     'accounts',
     'messaging',
+    'scheduling',
     'skills',
     'swaps',
 ]
