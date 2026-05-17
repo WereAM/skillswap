@@ -118,5 +118,4 @@ def get_business_hours_suggestions(sender, receiver, duration_minutes, buffer, n
             if len(suggestions) >= num_suggestions:
                 return sorted(suggestions)[:num_suggestions]
             
-    return sorted(suggestions)[:num_suggestions]
-            
+    return sorted(suggestions)[:num_suggestions]  
