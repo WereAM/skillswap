@@ -1,14 +1,13 @@
 from datetime import timedelta
-from swaps.models import Session, SwapRequest
+from swaps.models import Session, SwapRequests
 from django.db.models import Q
 
 '''
 Gets all scheduled sessions for a user within a date range.
 '''
 def get_user_sessions(user, start_date, end_date):
-    from swaps.models import SwapRequests
-    swap_ids = SwapRequest.objects.filter(
-        models.Q(sender=user) | models.Q(receiver=user),
+    swap_ids = SwapRequests.objects.filter(
+        Q(sender=user) | Q(receiver=user),
         status = 'accepted'
     ).values_list('id', flat=True)
 

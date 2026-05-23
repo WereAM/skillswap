@@ -17,7 +17,7 @@ class EnhancedSessionForm(forms.ModelForm):
         widgets = {
             'scheduled_date': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
             'duration_minutes': forms.Select(
-                choicess=[
+                choices=[
                     (30, '30 minutes'),
                     (45, '45 minutes'),
                     (60, '1 hour'),
@@ -48,7 +48,7 @@ class EnhancedSessionForm(forms.ModelForm):
 Form for adding/editing availability slots in the scheduling preferences.'''
 class AvailabilitySlotForm(forms.ModelForm):
     class Meta:
-        model = SchedulingPreference
+        model = AvailabilitySlots
         fields = ['day_of_week', 'start_time', 'end_time']
         widgets = {
             'day_of_week': forms.Select(attrs={'class': 'form-select'}),
