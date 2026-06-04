@@ -34,7 +34,7 @@ def calendar_view(request):
     week_start_local = week_start_local.replace(hour=0, minute=0, second=0, microsecond=0)
     # apply week offset for navigation
     week_start_local += timedelta(weeks=week_offset)
-    week_end_local = week_start_local + timedelta(days=7)
+    week_end_local = week_start_local + timedelta(days=6)
     # convert to UTC for querying sessions
     week_start_utc = week_start_local.astimezone(pytz.UTC)
     week_end_utc = week_end_local.astimezone(pytz.UTC)
@@ -242,7 +242,7 @@ def set_availability(request):
             if preferences_form.is_valid():
                 preferences_form.save()
                 messages.success(request, 'Scheduling preferences saved!')
-            return redirect('set_availability')
+            return redirect('scheduling:availability')
         
         elif action == 'add_slot':
             slot_form = AvailabilitySlotForm(request.POST)
@@ -251,7 +251,7 @@ def set_availability(request):
                 slot.user = request.user
                 slot.save()
                 messages.success(request, 'Availability slot added!')
-            return redirect('set_availability')
+            return redirect('scheduling:availability')
         
         elif action == 'delete_slot':
             slot_id = request.POST.get('slot_id')
@@ -265,6 +265,22 @@ def set_availability(request):
         'slot_form': AvailabilitySlotForm(),
         'slots': slots,
     })
+
+@login_required
+def api_set_timezone(request):
+    """Auto-saves user's detected browser timezone"""
+    if request.method == 'POST':
+        import json
+        import pytz
+        data = json.loads(request.body)
+        tz = data.get('timezone', 'UTC')
+        # Validate it's a real timezone
+        if tz in pytz.all_timezones:
+            preferences, _ = SchedulingPreference.objects.get_or_create(user=request.user)
+            preferences.timezone = tz
+            preferences.save()
+            return JsonResponse({'status': 'ok', 'timezone': tz})
+    return JsonResponse({'status': 'error'}, status=400)
 
 @login_required
 def api_check_conflict(request):

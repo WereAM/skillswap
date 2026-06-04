@@ -33,7 +33,7 @@ def check_conflict(user, proposed_start, duration_minutes, buffer_minutes=15, ex
     buffered_end = proposed_end + timedelta(minutes=buffer_minutes)
 
     # get all swaps involving the user
-    user_swap_ids = SwapRequest.objects.filter(
+    user_swap_ids = SwapRequests.objects.filter(
         Q(sender=user) | Q(receiver=user),
         status='accepted'
     ).values_list('id', flat=True)
@@ -64,7 +64,7 @@ def check_conflict(user, proposed_start, duration_minutes, buffer_minutes=15, ex
 Finds all conflicting sessions for a user within a week starting from the given date.
 '''
 def find_conflicts_in_week(user, week_start):
-    week_end = week_start + timedelta(days=7)
+    week_end = week_start + timedelta(days=6)
     sessions = get_user_sessions(user, week_start, week_end)
     conflicts = []
 

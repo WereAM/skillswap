@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title_block %}
+    Schedule Session
+{% endblock %}
+
+{% block content_block %}
+
+<div class="container py-4" style="max-width: 780px;">
+    <div class="page-header">
+        <h2>Schedule Your Session</h2>
+        <p>with <strong>{{ other_user.username }}</strong> . {{ user_timezone }}</p>
+    </div>
+
+    <!-- smart suggestions -->
+    {% if suggestions %}
+    <div class="card mb-4">
+        <div class="card-header d-flex align-items-center gap-2">
+            Schedule Suggestions
+            <span class="badge bg-primary ms-1">Based on both your availabilities</span>
+        </div>
+        <div class="card-body">
+            <p class="text-muted small mb-3">
+                These times work earliest for both you and {{ other_user.username }}:
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                {% for s in suggestions %}
+                <button type="button" 
+                        class="btn btn-outline-primary btn-sm suggestion-btn" 
+                        data-datetime="{{ s|date:'Y-m-d' }}T{{ s|date:'H:i' }}">
+                    {{ s|date:"D d M" }} at {{ s|date:"g:i a" }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <form method="POST" id="session-form">
+        {% csrf_token %}
+
+        <div class="card mb-3">
+            <div class="card-header">
+                <svg width="16" height="16" fill="currentColor" class="bi bi-calendar-day" viewBox="0 0 16 16">
+                    <path d="M4.684 11.523v-2.3h2.261v-.61H4.684V6.801h2.464v-.61H4v5.332zm3.296 0h.676V8.98c0-.554.227-1.007.953-1.007.125 0 .258.004.329.015v-.613a2 2 0 0 0-.254-.02c-.582 0-.891.32-1.012.567h-.02v-.504H7.98zm2.805-5.093c0 .238.192.425.43.425a.428.428 0 1 0 0-.855.426.426 0 0 0-.43.43m.094 5.093h.672V7.418h-.672z"/>
+                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+                </svg>
+                Calendar
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Date & Time</label>
+                        {{ form.scheduled_date }}
+                        <!-- real time conflict warning -->
+                        <div id="conflict-warning"
+                                class="alert alert-warning mt-2"
+                                style="display: none;">
+                        </div> 
+                        <div id="conflict-ok"
+                                class="alert alert-success mt-2"
+                                style = "display:none;">
+                            This time is available
+                        </div> 
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Duration</label>
+                        {{ form.duration_minutes }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Timezone</label>
+                        {{ form.timezone }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-header">
+                <svg width="16" height="16" fill="currentColor" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                    <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"/>
+                    <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                </svg>
+                Location
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex gap-3 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio"
+                                    name="location_type" value="virtual"
+                                    id="virtual" checked 
+                                    onchange="toggleLocationType(this.value)">
+                            <label class="form-check-label" for="virtual">
+                                Virtual
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio"
+                                    name="location_type" value="physical"
+                                    id="physical" 
+                                    onchange="toggleLocationType(this.value)">
+                            <label class="form-check-label" for="physical">
+                                In Person
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- virtual meeting link -->
+                <div id="virtual-section">
+                    <label class="form-label">Meeting Link</label>
+                    {{ form.meeting_link }}
+                    <div class="mt-2 d-flex gap-2">
+                        <a href="https://meet.google.com/new"
+                            target="_blank"
+                            class="btn btn-sm btn-outline-primary">
+                            Create Google Meet
+                        </a>
+                        <a href="https://zoom.us/start/videomeeting"
+                            target="_blank"
+                            class="btn btn-sm btn-outline-primary">
+                            Create Zoom
+                        </a>
+                    </div>
+                </div>
+
+                <!-- physical location with map -->
+                <div id="physical-section" style="display: none;">
+                    <label class="form-label">Search Location</label>
+                    {{ form.location_name }}
+                    {{ form.location_latitude }}
+                    {{ form.location_longitude }}
+                    <!-- google map -->
+                    <div id="map"
+                        style="height: 300px; border-radius: var(--radius-sm);
+                        margin-top: 0.75rem; border: 1.5px solid var(--border);">
+                    </div>
+                    <p class="text-muted small mt-1">
+                        Click the map or search above to pin your meetup location.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <svg width="16" height="16" viewBox="0 0 512 512"><path d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 256.2L344 121.9 390.1 168 255.8 302.2c-2.9 2.9-6.5 5-10.4 6.1l-58.5 16.7 16.7-58.5c1.1-3.9 3.2-7.5 6.1-10.4zM373.1 25L175.8 222.2c-8.7 8.7-15 19.4-18.3 31.1l-28.6 100c-2.4 8.4-.1 17.4 6.1 23.6s15.2 8.5 23.6 6.1l100-28.6c11.8-3.4 22.5-9.7 31.1-18.3L487 138.9c28.1-28.1 28.1-73.7 0-101.8L474.9 25C446.8-3.1 401.2-3.1 373.1 25zM88 64C39.4 64 0 103.4 0 152L0 424c0 48.6 39.4 88 88 88l272 0c48.6 0 88-39.4 88-88l0-112c0-13.3-10.7-24-24-24s-24 10.7-24 24l0 112c0 22.1-17.9 40-40 40L88 464c-22.1 0-40-17.9-40-40l0-272c0-22.1 17.9-40 40-40l112 0c13.3 0 24-10.7 24-24s-10.7-24-24-24L88 64z"/></svg>
+                Notes
+            </div>
+            <div class="card-body">
+                {{ form.notes }}
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+                Schedule Session
+            </button>
+            <a href="{% url 'swaps:detail' swap.pk %}"
+                class="btn btn-outline-secondary">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- google maps API -->
+{% if GOOGLE_MAPS_API_KEY %}
+<script src="{% static 'js/maps.js' %}"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&libraries=places&callback=initMap" async defer></script>
+{% endif %}
+
+<script src="{% static 'js/schedule.js' %}"></script>
+
+{% endblock %}

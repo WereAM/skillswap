@@ -1,6 +1,6 @@
 /* import Google fonts: playfair disaplay and DM Sans */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
-/* @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 /* variables */
 :root {
@@ -829,16 +829,6 @@ footer-logo {
     margin-bottom: 0.5rem;
 }
 
-/* mobile vs large screen responsiveness */
-@media (max-width: 768px) {
-    .hero h1 { font-size: 2.2rem; }
-    .hero { padding: 3rem 0 2.5rem; }
-    .hero-motif { display: none;}
-    h2 { font-size: 1.6rem; }
-    .hero-buttons { flex-direction: column; }
-    .hero-buttons .btn { width: 100%; justify-content: center; }
-}
-
 /* message bubbles */
 .message-bubble {
     word-wrap: break-word;
@@ -868,6 +858,340 @@ footer-logo {
 .notification-card.unread { 
     border-left: 4px solid var(--teal); 
     background: var(--teal-light); 
+}
+
+/* SCHEDULE PAGE LAYOUT */
+.schedule-page {
+    padding: 2rem 2rem 0;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.schedule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 1.5rem;
+}
+
+.schedule-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.schedule-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--dark);
+    line-height: 1;
+    margin: 0;
+}
+
+.week-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.week-nav-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: var(--transition);
+}
+
+.week-nav-btn:hover {
+    border-color: var(--teal);
+    color: var(--teal);
+    background: var(--teal-light);
+}
+
+.week-range {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    min-width: 80px;
+    text-align: center;
+}
+
+.schedule-layout {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.calendar-wrap {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: 56px repeat(7, 1fr);
+    grid-template-rows: 60px repeat(24, 72px);
+    position: relative;
+}
+
+.calendar-time-gutter {
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+}
+
+.calendar-day-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    background: var(--bg);
+    gap: 0.2rem;
+}
+
+.day-name {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+}
+
+.day-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--dark);
+    line-height: 1;
+}
+
+.today {
+    background: var(--teal);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.today-name, .today-num {
+    color: var(--white);
+}
+
+.calendar-hour-label {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 0.5rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    background: var(--bg);
+    font-weight: 500;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.calendar-cell {
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s ease;
+    cursor: pointer;
+}
+
+.calendar-cell:hover {
+    background: var(--teal-light);
+}
+
+.session-block {
+    position: absolute;
+    border-radius: 20px;
+    padding: 0.5rem 0.6rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    overflow: hidden;
+    min-height: 40px;
+    z-index: 10;
+}
+
+.session-block.virtual {
+    background: var(--teal);
+}
+
+.session-block.physical {
+    background: var(--plum);
+}
+
+.session-block.session-completed {
+    opacity: 0.6;
+}
+
+.session-block:hover {
+    transform: scale(1.02);
+    box-shadow: var(--shadow-md);
+    z-index: 20;
+}
+
+.session-time {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.8);
+    font-family: 'DM Sans', sans-serif;
+}
+
+.session-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--white);
+    font-family: 'Playfair Display', serif;
+    line-height: 1.2;
+}
+
+.session-with {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.75);
+    font-family: 'DM Sans', sans-serif;
+}
+
+.sidebar-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.sidebar-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    columns: var(--dark);
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+}
+
+.upcoming-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.upcoming-item:last-child {
+    border-bottom: none;
+}
+
+.upcoming-item:hover {
+    background: var(--teal-light);
+    border-radius: var(--radius-sm);
+    padding-left: 0.5rem;
+}
+
+.upcoming-accent {
+    width: 4px;
+    height: 40px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.accent-teal {
+    background: var(--teal);
+}
+
+.accent-red {
+    background: var(--red);
+}
+
+.accent-plum {
+    background: var(--plum);
+}
+
+.upcoming-info {
+    flex: 1;
+}
+
+.upcoming-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--dark);
+    margin: 0;
+}
+
+.upcoming-meta {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin: 0;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.join-btn {
+    width: 34px;
+    height: 34px;
+    background: var(--teal);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: var(--transition);
+}
+
+.join-btn:hover {
+    background: var(--teal-dark); transform: scale(1.1);
+}
+
+/* mobile vs large screen responsiveness */
+@media (max-width: 1024px) {
+    .schedule-layout {
+        grid-template-columns: 1fr;
+    }
+    .schedule-sidebar {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero h1 { font-size: 2.2rem; }
+    .hero { padding: 3rem 0 2.5rem; }
+    .hero-motif { display: none;}
+    h2 { font-size: 1.6rem; }
+    .hero-buttons { flex-direction: column; }
+    .hero-buttons .btn { width: 100%; justify-content: center; }
+    .schedule-page { padding: 1rem; }
+    .schedule-title { font-size: 2.5rem; }
+    .calendar-grid {
+        grid-template-columns: 40px repeat(7, 1fr);
+    }
 }
 
 /* utilities */

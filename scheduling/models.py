@@ -14,10 +14,10 @@ DAYS_OF_WEEK = [
     (6, 'Sunday'),
 ]
 
-'''Model to manage a user's schedule preferences.
-Only 1 per user, created automatically on first visit to scheduling page.
-'''          
 class SchedulingPreference(models.Model):
+    '''Model to manage a user's schedule preferences.
+    Only 1 per user, created automatically on first visit to scheduling page.
+    '''          
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='scheduling_preference')   
     timezone = models.CharField(max_length=50, choices=TIMEZONE_CHOICES, default='UTC')
     # minimum gap between sessions in minutes
@@ -31,10 +31,10 @@ class SchedulingPreference(models.Model):
     def __str__(self):
         return f'{self.user.username} Scheduling Preferences (Timezone: {self.timezone})'
 
-'''A recurring weekly avaiability window for a user, e.g. 'Every Monday 6pm-8pm.
-Used by the smart suggestion engine to find mutual free timeslots.
-'''    
 class AvailabilitySlots(models.Model):
+    '''A recurring weekly avaiability window for a user, e.g. 'Every Monday 6pm-8pm.
+    Used by the smart suggestion engine to find mutual free timeslots.
+    '''    
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='availability_slots')
     day_of_week = models.IntegerField(choices=DAYS_OF_WEEK)
     start_time = models.TimeField()

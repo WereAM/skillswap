@@ -2,11 +2,11 @@ from django import forms
 from swaps.models import Session
 from .models import AvailabilitySlots, SchedulingPreference, TIMEZONE_CHOICES
 
-'''
-Session form with timezone, location and meeting link fields.
-Replaces the SessionForm in swaps/forms.py
-'''
 class EnhancedSessionForm(forms.ModelForm):
+    '''
+    Session form with timezone, location and meeting link fields.
+    Replaces the SessionForm in swaps/forms.py
+    '''
     class Meta:
         model = Session
         fields = [
@@ -23,6 +23,7 @@ class EnhancedSessionForm(forms.ModelForm):
                     (60, '1 hour'),
                     (90, '1.5 hours'),
                     (120, '2 hours'),
+                    (180, '3 hours'),
                 ],
                 attrs={'min': 1}),
             'timezone': forms.Select(
