@@ -3,26 +3,25 @@ import pytz
 from .conflicts import check_conflict
 from .timezone import convert_to_utc
 
-'''
-Finds mutually available time slots for two users
-Algorithm:
-    1. Define the date range to check (e.g. next 7 days)
-    2. Get all available time slots for each user within that range
-    3. Find overlapping windows between the two users
-    4. Check for conflicts within each overlapping window
-    5. Returns the best suggestions sorted by earliest available time
-
-Args:
-    - sender: User object initiating the swap
-    - receiver: User object receiving the swap request
-    - duration_minutes: int, duration of the session in minutes
-    - num_suggestions: int, number of suggestion options to return
-
-Returns:
-    - list of datetime objects representing suggested session start times in UTC
-'''
-
 def get_smart_suggestions(sender, receiver, duration_minutes=60, num_suggestions=5):
+    '''
+    Finds mutually available time slots for two users
+    Algorithm:
+        1. Define the date range to check (e.g. next 7 days)
+        2. Get all available time slots for each user within that range
+        3. Find overlapping windows between the two users
+        4. Check for conflicts within each overlapping window
+        5. Returns the best suggestions sorted by earliest available time
+
+    Args:
+        - sender: User object initiating the swap
+        - receiver: User object receiving the swap request
+        - duration_minutes: int, duration of the session in minutes
+        - num_suggestions: int, number of suggestion options to return
+
+    Returns:
+        - list of datetime objects representing suggested session start times in UTC
+    '''
     try:
         sender_preferences = sender.scheduling_preferences
         receiver_preferences = receiver.scheduling_preferences
@@ -65,7 +64,7 @@ def get_smart_suggestions(sender, receiver, duration_minutes=60, num_suggestions
                 overlap_start = max(sender_slot.start_time, receiver_slot.start_time)
                 overlap_end = min(sender_slot.end_time, receiver_slot.end_time)
 
-                if overlap_end <= overlap_start:
+                if overlap_start >= overlap_end:
                     continue  # no overlap
 
                 # convert overlap times to UTC datetimes
@@ -92,11 +91,11 @@ def get_smart_suggestions(sender, receiver, duration_minutes=60, num_suggestions
 
     return sorted(suggestions)[:num_suggestions]
             
-'''
-Fallback method to suggest times based on business hours (9am-5pm)
-if no availability preferences are set by either user.
-'''
 def get_business_hours_suggestions(sender, receiver, duration_minutes, buffer, num_suggestions):
+    '''
+    Fallback method to suggest times based on business hours (9am-5pm)
+    if no availability preferences are set by either user.
+    '''
     suggestions = []
     now = datetime.now(pytz.utc)
 

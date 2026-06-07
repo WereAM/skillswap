@@ -1,17 +1,17 @@
-from datetime import timedelta
 import json
+from datetime import timedelta
 from django.conf import settings
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from requests import session
 
-'''
-Builds an authenticated Google Calendar API service for a user.
-Requires the user to have connected their Google Calendar.
-Returns a Google Calendar service object or None if the user has not connected their calendar.
-'''
 def get_google_calendar_service(user):
+    '''
+    Builds an authenticated Google Calendar API service for a user.
+    Requires the user to have connected their Google Calendar.
+    Returns a Google Calendar service object or None if the user has not connected their calendar.
+    '''
     try:
         token_json = user.scheduling_preferences.google_calendar_token
         if not token_json:
@@ -28,15 +28,15 @@ def get_google_calendar_service(user):
     except Exception:
         return None  # In case of any error, treat as not connected
 
-'''
-Called when a session is scheduled.
-Creates a Google Calendar event for both participants.
-Args: - session: Session model instance
-      - sender: User object initiating the swap
-      - receiver: User object receiving the swap request
-Returns: event ID string if event created successfully, else None
-'''
 def create_google_calendar_event(session, sender, receiver):
+    '''
+    Called when a session is scheduled.
+    Creates a Google Calendar event for both participants.
+    Args: - session: Session model instance
+        - sender: User object initiating the swap
+        - receiver: User object receiving the swap request
+    Returns: event ID string if event created successfully, else None
+    '''
     service = get_google_calendar_service(sender)
     if not service:
         return None  # Sender has not connected their calendar
@@ -86,10 +86,10 @@ def create_google_calendar_event(session, sender, receiver):
         print(f"Error creating Google Calendar event: {e}")
         return None  # Handle any errors gracefully
     
-'''
-Updates an existing Google Calendar event when session details change (e.g. rescheduling).
-'''
 def update_google_calendar_event(session):
+    '''
+    Updates an existing Google Calendar event when session details change (e.g. rescheduling).
+    '''
     if not session.google_calendar_event_id:
         return False  # No event to update
     
@@ -121,10 +121,10 @@ def update_google_calendar_event(session):
         print(f"Error updating Google Calendar event: {e}")
         return False 
     
-'''
-Deletes a Google Calendar event when a session is cancelled.
-'''
 def delete_google_calendar_event(session):
+    '''
+    Deletes a Google Calendar event when a session is cancelled.
+    '''
     if not session.google_calendar_event_id:
         return False  # No event to delete
     
@@ -136,7 +136,7 @@ def delete_google_calendar_event(session):
         service.events().delete(
             calendarId='primary',
             eventId=session.google_calendar_event_id,
-            sendUpdates='all'
+            sendUpdates='all',
         ).execute()
         return True
     except HttpError as e:

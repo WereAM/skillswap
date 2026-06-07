@@ -45,9 +45,8 @@ class EnhancedSessionForm(forms.ModelForm):
                 'placeholder': 'Additional notes (optional)'}),
         }
 
-'''
-Form for adding/editing availability slots in the scheduling preferences.'''
 class AvailabilitySlotForm(forms.ModelForm):
+    ''' Form for adding/editing availability slots in the scheduling preferences.'''
     class Meta:
         model = AvailabilitySlots
         fields = ['day_of_week', 'start_time', 'end_time']
@@ -57,10 +56,8 @@ class AvailabilitySlotForm(forms.ModelForm):
             'end_time': forms.TimeInput(attrs={'type': 'time', 'class': 'form-control'}),
         }
 
-'''
-Form for managing scheduling preferences, including availability slots and timezone selection.
-'''
 class SchedulingPreferenceForm(forms.ModelForm):
+    '''Form for managing scheduling preferences, including availability slots and timezone selection.'''
     class Meta:
         model = SchedulingPreference
         fields = ['timezone', 'buffer_minutes', 'reminder_hours']

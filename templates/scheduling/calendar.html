@@ -48,7 +48,7 @@
                 <!-- time slots(rows) -->
                 {% for hour in hours %}
                 <div class="calendar-hour-label">
-                    {% if hour == 0 %}{{ hour|add:"+12" }}am{% elif hour < 12 %}{{ hour }}am{% elif hour == 12 %}{{ hour }}pm{% else %}{{ hour|add:"-12" }}pm{% endif %}
+                    {% if hour == 0 %}12am{% elif hour < 12 %}{{ hour }}am{% elif hour == 12 %}12pm{% else %}{{ hour|add:"-12" }}pm{% endif %}
                 </div>
                 {% for day in week_days %}
                 <div class="calendar-cell" data-day="{{ forloop.counter0}}" data-hour="{{ hour }}"></div>
@@ -63,11 +63,9 @@
                     data-hour="{{ s.hour }}"
                     data-minute="{{ s.minute }}"
                     data-duration="{{ s.session.duration_minutes }}"
-                    style="grid-column: {{ s.day_index|add:'2' }};
-                            grid-row: {{ s.hour|add:'-7' }};"
                     onclick="window.location='/swaps/{{ s.session.swap_request.pk }}/'">
                     <span class="session-time">
-                        {{ s.local_dt|date:"g: i a" }}
+                        {{ s.local_dt|date:"g:i a" }}
                     </span>
                     <span class="session-title">{{ s.skill_name }}</span>
                     <span class="session-with">w/ {{ s.other_user.username }}</span>

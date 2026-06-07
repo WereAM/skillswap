@@ -19,12 +19,13 @@ from .utils.suggestions import get_smart_suggestions
 def calendar_view(request):
     '''
     Main calendar view showing all the user's session per week.
+    Includes week navigation.
     '''
 
     # get scheduling preferences/create if first visit
     preferences, _ = SchedulingPreference.objects.get_or_create(user=request.user)
-    user_tz_str = preferences.timezone
-    user_tz = pytz.timezone(user_tz_str)
+    user_timezone = preferences.timezone
+    user_tz = pytz.timezone(user_timezone)
 
     # calculate week range (Monday-Sunday) for the calendar view/navigation
     week_offset = int(request.GET.get('week', 0))
@@ -36,8 +37,8 @@ def calendar_view(request):
     week_start_local += timedelta(weeks=week_offset)
     week_end_local = week_start_local + timedelta(days=6)
     # convert to UTC for querying sessions
-    week_start_utc = week_start_local.astimezone(pytz.UTC)
-    week_end_utc = week_end_local.astimezone(pytz.UTC)
+    week_start_utc = week_start_local.astimezone(pytz.utc)
+    week_end_utc = week_end_local.astimezone(pytz.utc)
 
     # get all sessions for the user in this week
     user_swap_ids = SwapRequests.objects.filter(
@@ -58,7 +59,7 @@ def calendar_view(request):
     # convert session times to user's local timezone for display
     session_data = []
     for session in sessions:
-        local_dt = convert_to_user_timezone(session.scheduled_date, user_tz_str)
+        local_dt = convert_to_user_timezone(session.scheduled_date, user_timezone)
         other_user = (
             session.swap_request.receiver
             if session.swap_request.sender == request.user
@@ -72,9 +73,6 @@ def calendar_view(request):
             'day_index': local_dt.weekday(),
             'hour': local_dt.hour,
             'minute': local_dt.minute,
-            # position on the calendar grid can be calculated as the position from the top of the hour block
-            'top_position': (local_dt.minute / 60) * 100,  # percentage from the 0 minute mark
-            'height_position': (session.duration_minutes / 60) * 100,  # percentage of the hour block
         })
 
     # calendar header showing the days of the week with dates
@@ -101,7 +99,7 @@ def calendar_view(request):
 
     upcoming_data = []
     for session in upcoming:
-        local_dt = convert_to_user_timezone(session.scheduled_date, user_tz_str)
+        local_dt = convert_to_user_timezone(session.scheduled_date, user_timezone)
         other_user = (
             session.swap_request.receiver
             if session.swap_request.sender == request.user
@@ -125,7 +123,7 @@ def calendar_view(request):
         'week_offset': week_offset,
         'upcoming': upcoming_data,
         'conflicts': conflicts,
-        'user_timezone': user_tz_str,
+        'user_timezone': user_timezone,
         'hours': range(24),
     })
 
@@ -155,9 +153,9 @@ def schedule_session(request, swap_pk):
     )
 
     # convert suggestions to user's local timezone for display
-    user_tz_str = preferences.timezone
+    user_timezone = preferences.timezone
     suggestions_local = [
-        convert_to_user_timezone(s, user_tz_str) for s in suggestions
+        convert_to_user_timezone(s, user_timezone) for s in suggestions
     ]
 
     if request.method == 'POST':
@@ -168,7 +166,7 @@ def schedule_session(request, swap_pk):
 
             # convert submitted datetime from user's local timezone to UTC before saving
             raw_datetime = form.cleaned_data['scheduled_date']
-            user_tz = pytz.timezone(user_tz_str)
+            user_tz = pytz.timezone(user_timezone)
             if timezone.is_naive(raw_datetime):
                 raw_datetime = user_tz.localize(raw_datetime)
             session.scheduled_date = raw_datetime.astimezone(pytz.UTC)
@@ -180,6 +178,7 @@ def schedule_session(request, swap_pk):
                 session.duration_minutes,
                 preferences.buffer_minutes
             )
+            
             if conflict['has_conflict']:
                 messages.warning(
                     request, 
@@ -207,22 +206,22 @@ def schedule_session(request, swap_pk):
                 user = other_user,
                 notification_type = 'session_scheduled',
                 content=f'{request.user.username} scheduled your session for '
-                        f'{convert_to_user_timezone(session.scheduled_date, user_tz_str).strftime("%A, %d %b at %H:%M")}.'
+                        f'{convert_to_user_timezone(session.scheduled_date, user_timezone).strftime("%A, %d %b at %H:%M")}.'
             )
 
             messages.success(request, 'Session scheduled successfully!')
             return redirect('scheduling:calendar')
     else:
         # prefill timezone with user's preference
-        form = EnhancedSessionForm(initial={'timezone': user_tz_str})
+        form = EnhancedSessionForm(initial={'timezone': user_timezone})
 
     return render(request, 'scheduling/schedule_session.html', {
         'form': form,
         'swap': swap,
         'suggestions': suggestions_local,
         'other_user': other_user,
-        'user_timezone': user_tz_str,
-        'GOOGLE_MAPS_API_KEY': getattr(settings, 'GOOGLE_MAPS_API_KEY', ''),
+        'user_timezone': user_timezone,
+        'GOOGLE_MAPS_KEY': getattr(settings, 'GOOGLE_MAPS_API_KEY', ''),
     })
 
 @login_required
@@ -233,6 +232,7 @@ def set_availability(request):
 
     preferences, _ = SchedulingPreference.objects.get_or_create(user=request.user)
     slots = AvailabilitySlots.objects.filter(user=request.user)
+    DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -256,7 +256,7 @@ def set_availability(request):
         elif action == 'delete_slot':
             slot_id = request.POST.get('slot_id')
             AvailabilitySlots.objects.filter(pk=slot_id, user=request.user).delete()
-            messages.success(request, 'Slot removed')
+            messages.success(request, 'Slot removed.')
             return redirect('scheduling:availability')
         
     return render(request, 'scheduling/availability.html', {
@@ -264,6 +264,7 @@ def set_availability(request):
         'preferences_form': SchedulingPreferenceForm(instance=preferences),
         'slot_form': AvailabilitySlotForm(),
         'slots': slots,
+        'days': list(enumerate(DAYS)),
     })
 
 @login_required
@@ -301,7 +302,7 @@ def api_check_conflict(request):
         # parse and convert to UTC
         datetime_naive = datetime.fromisoformat(datetime_str)
         tz = pytz.timezone(user_tz)
-        datetime_utc = tz.localize(datetime_naive).astimezone(pytz.UTC)
+        datetime_utc = tz.localize(datetime_naive).astimezone(pytz.utc)
 
         preferences, _ = SchedulingPreference.objects.get_or_create(user=request.user)
         result = check_conflict(request.user, datetime_utc, duration, preferences.buffer_minutes)
@@ -329,17 +330,17 @@ def api_get_suggestions(request):
         return JsonResponse({'error': 'Missing swap_pk parameter'}, status=400)
     
     swap = get_object_or_404(SwapRequests, pk=swap_pk)
-    other_user = swap.requester if swap.receiver != request.user else swap.sender
+    other_user = swap.receiver if request.user == swap.sender else swap.sender
     preferences, _ = SchedulingPreference.objects.get_or_create(user=request.user)
 
     suggestions = get_smart_suggestions(request.user, other_user)
-    user_tz_str = preferences.timezone
+    user_timezone = preferences.timezone
 
     return JsonResponse({
         'suggestions': [
             {
                 'utc': s.isoformat(),
-                'local': convert_to_user_timezone(s, user_tz_str).strftime('%A, %d, %b at %H:%M'),
+                'local': convert_to_user_timezone(s, user_timezone).strftime('%A, %d, %b at %H:%M'),
             }
             for s in suggestions
         ]

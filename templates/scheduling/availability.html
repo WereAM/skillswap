@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title_block %}
+    Availability
+{% endblock %}
+
+{% block content_block %}
+<div class="availability-page">
+    <h1 class="page-title">Set Your Availability</h1>
+    {% for day_num, day_name in days %}
+    <div class="avail-day-col">
+        {% for slot in slots %}
+            {% if slot.day_of_week == day_num %}
+                <div class="avail-slot-pill">
+
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
