@@ -91,7 +91,7 @@
 
                     <!-- visual weekly grid -->
                     <div class="availability-grid">
-                        <div class="avail-grid header">
+                        <div class="avail-grid-header">
                             <div class="avail-time-col"></div>
                             {% for day_num, day_name in days %}
                             <div class="avail-day-label">
@@ -231,6 +231,8 @@
             Back to Calendar
         </a>
     </div>
-    
+
 </div>
+
+<script src="{% static 'js/availability.js' %}"></script>
 {% endblock %}
