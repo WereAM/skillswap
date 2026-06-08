@@ -2,22 +2,235 @@
 {% load static %}
 
 {% block title_block %}
-    Availability
+    Availability & Preferences
 {% endblock %}
 
 {% block content_block %}
-<div class="availability-page">
-    <h1 class="page-title">Set Your Availability</h1>
-    {% for day_num, day_name in days %}
-    <div class="avail-day-col">
-        {% for slot in slots %}
-            {% if slot.day_of_week == day_num %}
-                <div class="avail-slot-pill">
+<div class="container py-4" style="max-width: 900px;">
+
+    <!-- page header -->
+    <div class="page-header">
+        <h2>Set Your Availability</h2>
+        <p>Set when you're available so SkillSwap can suggest the best times for both you and your swap partner</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Scheduling preferences => left column -->
+        <div class="col-md-5">
+
+            <!-- preferences card -->
+            <div class="card mb-4">
+                <div class="card-header d-flex align-items-center gap-2">
+                    <span>Scheduling Preferences</span>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="save_prefs">
+
+                        <div class="mb-3">
+                            <label class="form-label">Your Timezone</label>
+                            {{ preferences_form.timezone}}
+                            <div class="form-text text-muted">
+                                All session times will be shown in this timezone.
+                            </div>    
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label"> Buffer Between Sessions</label>
+                            {{ preferences_form.buffer_minutes }}
+                            <div class="form-text text-muted">
+                                Minimum gap required between back-to-back sessions.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Session Reminder</label>
+                            {{ preferences_form.reminder_hours }}
+                            <div class="form-text text-muted">
+                                We'll email you before each session.
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            Save Preferences
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- detected timezone -->
+            <div class="card">
+                <div class="card-body">
+                    <p class="text-muted small mb-2">
+                        Detected timezone from your browser:
+                    </p>
+                    <p class="fw-600 mb-3" id="detected-tz">Detecting...</p>
+                    <button class="btn btn-outline-primary btn-sm w-100"
+                            onclick="applyDetectedTimezone()">
+                        Use Detected Timezone
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- weekly availability => right column -->
+        <div class="col-md-7">
+
+            <!-- weekly grid -->
+            <div class="card mb-4">
+                <div class="card-header d-flex align-items-center gap-2">
+                    <span>Weekly Availability</span>
+                    <span class="badge bg-primary ms-auto">
+                        {{ slots.count }} slot{{ slots.count|pluralize }}
+                    </span>
+                </div>
+
+                <div class="card-body p-0">
+
+                    <!-- visual weekly grid -->
+                    <div class="availability-grid">
+                        <div class="avail-grid header">
+                            <div class="avail-time-col"></div>
+                            {% for day_num, day_name in days %}
+                            <div class="avail-day-label">
+                                {{ day_name }}
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- existing slots per day displayed as pills -->
+                        <div class="avail-slots-wrap">
+                            {% for day_num, day_name in days %}
+                            <div class="avail-day-col">
+                                {% for slot in slots %}
+                                    {% if slot.day_of_week == day_num %}
+                                    <div class="avail-slot-pill">
+                                        <span class="slot-time">
+                                            {{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i"}}
+                                        </span>
+                                        <form method="POST" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="delete_slot">
+                                            <input type="hidden" name="slot_id" value="{{ slot.pk }}">
+                                            <button type="submit" class="slot-delete-btn" title="Remove slot">
+                                                <svg width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+                                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {% if not slots %}
+                    <div class="text-center py-4 text-muted">
+                        <p class="small">No availability set yet.</p>
+                        <p class="small">Add slots below so we can suggest the best times.</p>
+                    </div>
+                    {% endif %}
 
                 </div>
-            {% endif %}
-        {% endfor %}
+            </div>
+
+            <!-- add slots form -->
+            <div class="card">
+                <div class="card-header" d-flex align-items-center gap-2>
+                    <span>Add Availability Slot</span>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="add_slot">
+
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label">Day</label>
+                                {{ slot_form.day_of_week }}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">From</label>
+                                {{ slot_form.start_time }}
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">To</label>
+                                {{ slot_form.end_time}}
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- form validation feedback -->
+                        {% if slot_form.errors %}
+                        <div class="alert alert-danger mt-3">
+                            {% for field in slot_form %}
+                                {% for error in field.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                    </form>
+
+                    <!-- quick presets to add automatically -->
+                    <div class="mt-3">
+                        <p class="text-muted small mb-2">Quick presets:</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button class="btn btn-sm btn-outline-secondary preset-btn"
+                                    data-day="0" data-start="09:00" data-end="17:00">
+                                Mon 9-5
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary preset-btn"
+                                    data-day="1" data-start="09:00" data-end="17:00">
+                                Tue 9-5
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary preset-btn"
+                                    data-day="2" data-start="09:00" data-end="17:00">
+                                Wed 9-5
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary preset-btn"
+                                    data-day="3" data-start="09:00" data-end="17:00">
+                                Thu 9-5
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary preset-btn"
+                                    data-day="4" data-start="09:00" data-end="17:00">
+                                Fri 9-5
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary preset-btn"
+                                    data-day="5" data-start="10:00" data-end="16:00">
+                                Sat 10-4
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary preset-btn"
+                                    data-day="6" data-start="10:00" data-end="16:00">
+                                Sun 10-4
+                            </button>
+                            <button class="btn btn-sm btn-outline-primary"
+                                    onclick="addWeekdays()">
+                                Add all weekdays 9-5
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                        
+        </div>
     </div>
-    {% endfor %}
+
+    <!-- back to calendar -->
+    <div class="mt-4">
+        <a href="{% url 'scheduling:calendar' %}" class="btn btn-outline-secondary">
+            Back to Calendar
+        </a>
+    </div>
+    
 </div>
 {% endblock %}
