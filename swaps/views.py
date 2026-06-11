@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from skills.models import UserSkill
-from swaps.forms import SessionForm, SwapRequestForm, ReviewForm
+from swaps.forms import SwapRequestForm, ReviewForm
 from .models import Session, SwapRequests, Review
 from accounts.models import UserProfile
 from messaging.utils import create_notification
@@ -105,21 +105,11 @@ def swap_detail(request, pk):
         ).exists()
     except Session.DoesNotExist:
         if swap.status == 'accepted':
-            if request.method == 'POST':
-                session_form = SessionForm(request.POST)
-                if session_form.is_valid():
-                    session = session_form.save(commit=False)
-                    session.swap_request = swap
-                    session.save()
-                    messages.success(request, "Session scheduled!")
-                    return redirect('swaps:detail', pk=pk)
-            else:
-                session_form = SessionForm()
+            pass # no session yet -> button pointing to scheduling app
 
     return render(request, 'swaps/swap_detail.html', {
         'swap': swap,
         'session': session,
-        'session_form': session_form,
         'user_has_reviewed': user_has_reviewed,
     })
 
