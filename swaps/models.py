@@ -63,7 +63,6 @@ class Session(models.Model):
         SwapRequests, on_delete=models.CASCADE,
         related_name='session'
     )
-
     scheduled_date = models.DateTimeField()
     duration_minutes = models.PositiveIntegerField(default=60)
     meeting_link = models.URLField(blank=True)
@@ -73,6 +72,13 @@ class Session(models.Model):
         default=SCHEDULED
     )
     notes = models.TextField(blank=True)
+    timezone = models.CharField(max_length=50, default='UTC')
+    is_virtual = models.BooleanField(default=True)
+    location_name = models.CharField(max_length=255, blank=True)
+    location_latitude = models.FloatField(null=True, blank=True)
+    location_longitude = models.FloatField(null=True, blank=True)
+    reminder_sent = models.BooleanField(default=False)
+    google_calendar_event_id = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return f'Session for {self.swap_request} on {self.scheduled_date}'

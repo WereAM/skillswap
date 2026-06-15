@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title_block %}
+    Schedule
+{% endblock %}
+
+{% block content_block %}
+
+<div class="schedule-page">
+
+    <!-- page header -->
+    <div class="schedule-header">
+        <div>
+            <h3 class="schedule-label">SCHEDULE</h3>
+            <h1 class="schedule-title">This week</h1>
+        </div>
+
+        <!-- week navigation -->
+        <div class="week-nav">
+            <button class="week-nav-btn" onclick="navigateWeek(-1)">‹</button>
+            <span class="week-range">
+                {{ week_start|date:"M d" }} - {{ week_end|date:"M d" }}
+            </span>
+            <button class="week-nav-btn" onclick="navigateWeek(1)">›</button>
+        </div>
+    </div>
+    
+    <div class="schedule-layout">
+
+        <!-- calendar (grid) -->
+        <div class="calendar-wrap">
+            <div class="calendar-grid">
+
+                <!-- day headers -->
+                <div class="calendar-time-gutter"></div>
+                {% for day in week_days %}
+                <div class="calendar-day-header {% if day.is_today %}today{% endif %}">
+                    <span class="day-name {% if day.is_today %}today-name{% endif %}">
+                        {{ day.day_name }}
+                    </span>
+                    <span class="day-num {% if day.is_today %}today-num{% endif %}">
+                        {{ day.day_num }}
+                    </span>
+                </div>
+                {% endfor %}
+
+                <!-- time slots(rows) -->
+                {% for hour in hours %}
+                <div class="calendar-hour-label">
+                    {% if hour == 0 %}12am{% elif hour < 12 %}{{ hour }}am{% elif hour == 12 %}12pm{% else %}{{ hour|add:"-12" }}pm{% endif %}
+                </div>
+                {% for day in week_days %}
+                <div class="calendar-cell" data-day="{{ forloop.counter0}}" data-hour="{{ hour }}"></div>
+                {% endfor %}
+                {% endfor %}
+
+                <!-- session blocks -->
+                {% for s in sessions %}
+                <div class="session-block session-{{ s.session.status }}
+                            {% if s.session.is_virtual %}virtual{% else %}physical{% endif %}"
+                    data-day="{{ s.day_index }}"
+                    data-hour="{{ s.hour }}"
+                    data-minute="{{ s.minute }}"
+                    data-duration="{{ s.session.duration_minutes }}"
+                    onclick="window.location='/swaps/{{ s.session.swap_request.pk }}/'">
+                    <!-- <span class="session-time">
+                        {{ s.local_dt|date:"g:i a" }}
+                    </span> -->
+                    <span class="session-title">{{ s.skill_name }}</span>
+                    <span class="session-with">w/ {{ s.other_user.username }}</span>
+                    {% if s.session.meeting_link %}
+                        <span class="session-virtual-badge">
+                            <svg width="16" height="16" fill="currentColor" class="bi bi-camera-video" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2z"/>
+                            </svg>
+                        </span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                
+            </div>
+        </div>
+
+        <!-- up next sessions (right sidebar) -->
+        <div class="schedule-sidebar">
+            <div class="sidebar-card">
+                <h6 class="sidebar-title">Up Next</h6>
+                {% if upcoming %}
+                    {% for i in upcoming %}
+                    <a href="{% url 'swaps:detail' i.session.swap_request.pk %}"
+                        class="upcoming-item">
+                        <div class="upcoming-accent"
+                            {% cycle 'accent-teal' 'accent-red' 'accent-plum' %}>
+                        </div>
+                        <div class="upcoming-info">
+                            <p class="upcoming-title">{{ i.skill_name }}</p>
+                            <p class="upcoming-meta">
+                                {{ i.local_dt|date:"D" }} . {{ i.local_dt|date:"g:i a" }}
+                            </p>
+                        </div>
+                        {% if i.session.meeting_link %}
+                        <a href="{{ i.session.meeting_link }}"
+                            target="_blank"
+                            class="join_btn"
+                            onclick="event.stopPropagation()">
+                            <!-- video icon -->
+                            <svg width="16" height="16" fill="currentColor" class="bi bi-camera-video" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2z"/>
+                            </svg>
+                        </a>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted small">No upcoming sessions.</p>
+                    <a href="{% url 'swaps:inbox' %}" class="btn btn-primary btn-sm mt-2 w-100">
+                        View Swap Inbox
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- timezone indicator -->
+            <div class="sidebar-card mt-3">
+                <p class="text-muted small mb-1">Your timezone</p>
+                <p class="fw-600 small">
+                    <svg width="20" height="20" fill="currentColor" class="bi bi-globe-europe-africa-fill" viewBox="0 0 16 16">
+                        <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0m0 1a6.97 6.97 0 0 0-4.335 1.505l-.285.641a.847.847 0 0 0 1.48.816l.244-.368a.81.81 0 0 1 1.035-.275.81.81 0 0 0 .722 0l.262-.13a1 1 0 0 1 .775-.05l.984.34q.118.04.243.054c.784.093.855.377.694.801a.84.84 0 0 1-1.035.487l-.01-.003C8.273 4.663 7.747 4.5 6 4.5 4.8 4.5 3.5 5.62 3.5 7c0 3 1.935 1.89 3 3 1.146 1.194-1 4 2 4 1.75 0 3-3.5 3-4.5 0-.704 1.5-1 1-2.5-.097-.291-.396-.568-.642-.756-.173-.133-.206-.396-.051-.55a.334.334 0 0 1 .42-.043l1.085.724a.276.276 0 0 0 .348-.035c.15-.15.414-.083.488.117.16.428.445 1.046.847 1.354A7 7 0 0 0 8 1"/>
+                    </svg>
+                    {{ user_timezone }}
+                </p>
+                <a href="{% url 'scheduling:availability' %}"
+                    class="btn btn-outline-primary btn-sm mt-2 w-100">
+                    Set Timezone & Availability
+                </a>
+            </div>
+
+            {% if conflicts %}
+            <div class="sidebar-card mt-3 border-danger">
+                <p class="text-danger small fw-600 mb-2">
+                    <svg width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
+                        <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.15.15 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.2.2 0 0 1-.054.06.1.1 0 0 1-.066.017H1.146a.1.1 0 0 1-.066-.017.2.2 0 0 1-.054-.06.18.18 0 0 1 .002-.183L7.884 2.073a.15.15 0 0 1 .054-.057m1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767z"/>
+                        <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
+                    </svg>
+                    Schedule Conflicts
+                </p>
+                {% for c in conflicts %}
+                <p class="text-muted small">
+                    Sessions overlap on {{ c.0.scheduled_date|date:"D d M" }}
+                </p>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/week_nav.js' %}"></script>
+
+{% endblock %}
