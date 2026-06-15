@@ -2,8 +2,8 @@
 const detectedTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 document.getElementById('detected-tz').textContent = detectedTz;
 
-function applyDetectedTimezone(){
-    const select = document.querySelector('[name="timezone]');
+function applyDetectedTimezone() {
+    const select = document.querySelector('[name="timezone"]');
     if (select) {
         // find the matching option
         for (let option of select.options) {
@@ -45,7 +45,7 @@ function addWeekdays() {
         { day: 4, start: '09:00', end: '17:00' },
     ];
 
-    // submit eac day as a separste form post vias fetch
+    // submit each day as a separate form post via fetch
     const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
     const promises = days.map(d => 
         fetch(window.location.href, {
