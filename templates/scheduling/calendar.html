@@ -64,15 +64,15 @@
                     data-minute="{{ s.minute }}"
                     data-duration="{{ s.session.duration_minutes }}"
                     onclick="window.location='/swaps/{{ s.session.swap_request.pk }}/'">
-                    <span class="session-time">
+                    <!-- <span class="session-time">
                         {{ s.local_dt|date:"g:i a" }}
-                    </span>
+                    </span> -->
                     <span class="session-title">{{ s.skill_name }}</span>
                     <span class="session-with">w/ {{ s.other_user.username }}</span>
                     {% if s.session.meeting_link %}
                         <span class="session-virtual-badge">
-                            <svg width="16" height="16" fill="currentColor" class="bi bi-camera-video-fill" viewBox="0 0 16 16">
-                                <path d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2z"/>
+                            <svg width="16" height="16" fill="currentColor" class="bi bi-camera-video" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2z"/>
                             </svg>
                         </span>
                     {% endif %}
@@ -105,8 +105,8 @@
                             class="join_btn"
                             onclick="event.stopPropagation()">
                             <!-- video icon -->
-                            <svg width="16" height="16" fill="currentColor" class="bi bi-camera-video-fill" viewBox="0 0 16 16">
-                                <path d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2z"/>
+                            <svg width="16" height="16" fill="currentColor" class="bi bi-camera-video" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M0 5a2 2 0 0 1 2-2h7.5a2 2 0 0 1 1.983 1.738l3.11-1.382A1 1 0 0 1 16 4.269v7.462a1 1 0 0 1-1.406.913l-3.111-1.382A2 2 0 0 1 9.5 13H2a2 2 0 0 1-2-2z"/>
                             </svg>
                         </a>
                         {% endif %}
@@ -131,7 +131,7 @@
                 </p>
                 <a href="{% url 'scheduling:availability' %}"
                     class="btn btn-outline-primary btn-sm mt-2 w-100">
-                    Set Availability
+                    Set Timezone & Availability
                 </a>
             </div>
 

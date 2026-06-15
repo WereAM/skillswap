@@ -9,9 +9,8 @@ urlpatterns = [
     # schedule a session
     path('session/<int:swap_pk>/', views.schedule_session, name='schedule_session'),
     # availability and preferences
-    path('availability/', views.set_availability, name='availability'),
+    path('availability/', views.availability_settings, name='availability'),
     # AJAX/API endpoints
     path('api/check-conflict/', views.api_check_conflict, name='api_check_conflict'),
     path('api/get_suggestions/', views.api_get_suggestions, name='api_get_suggestions'),
-    path('api/set-timezone/', views.api_set_timezone, name='api_set_timezone'),
 ]

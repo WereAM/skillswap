@@ -24,8 +24,9 @@ def calendar_view(request):
 
     # get scheduling preferences/create if first visit
     preferences, _ = SchedulingPreference.objects.get_or_create(user=request.user)
-    user_timezone = preferences.timezone
-    user_tz = pytz.timezone(user_timezone)
+    print(f'DEBUG: user={request.user.username}, timezone={preferences.timezone}')
+    user_tz_str = preferences.timezone
+    user_tz = pytz.timezone(user_tz_str)
 
     # calculate week range (Monday-Sunday) for the calendar view/navigation
     week_offset = int(request.GET.get('week', 0))
@@ -59,7 +60,7 @@ def calendar_view(request):
     # convert session times to user's local timezone for display
     session_data = []
     for session in sessions:
-        local_dt = convert_to_user_timezone(session.scheduled_date, user_timezone)
+        local_dt = convert_to_user_timezone(session.scheduled_date, user_tz_str)
         other_user = (
             session.swap_request.receiver
             if session.swap_request.sender == request.user
@@ -99,7 +100,7 @@ def calendar_view(request):
 
     upcoming_data = []
     for session in upcoming:
-        local_dt = convert_to_user_timezone(session.scheduled_date, user_timezone)
+        local_dt = convert_to_user_timezone(session.scheduled_date, user_tz_str)
         other_user = (
             session.swap_request.receiver
             if session.swap_request.sender == request.user
@@ -123,7 +124,7 @@ def calendar_view(request):
         'week_offset': week_offset,
         'upcoming': upcoming_data,
         'conflicts': conflicts,
-        'user_timezone': user_timezone,
+        'user_timezone': user_tz_str,
         'hours': range(24),
     })
 
@@ -153,9 +154,9 @@ def schedule_session(request, swap_pk):
     )
 
     # convert suggestions to user's local timezone for display
-    user_timezone = preferences.timezone
+    user_tz_str = preferences.timezone
     suggestions_local = [
-        convert_to_user_timezone(s, user_timezone) for s in suggestions
+        convert_to_user_timezone(s, user_tz_str) for s in suggestions
     ]
 
     if request.method == 'POST':
@@ -166,7 +167,7 @@ def schedule_session(request, swap_pk):
 
             # convert submitted datetime from user's local timezone to UTC before saving
             raw_datetime = form.cleaned_data['scheduled_date']
-            user_tz = pytz.timezone(user_timezone)
+            user_tz = pytz.timezone(user_tz_str)
             if timezone.is_naive(raw_datetime):
                 raw_datetime = user_tz.localize(raw_datetime)
             session.scheduled_date = raw_datetime.astimezone(pytz.UTC)
@@ -206,26 +207,26 @@ def schedule_session(request, swap_pk):
                 user = other_user,
                 notification_type = 'session_scheduled',
                 content=f'{request.user.username} scheduled your session for '
-                        f'{convert_to_user_timezone(session.scheduled_date, user_timezone).strftime("%A, %d %b at %H:%M")}.'
+                        f'{convert_to_user_timezone(session.scheduled_date, user_tz_str).strftime("%A, %d %b at %H:%M")}.'
             )
 
             messages.success(request, 'Session scheduled successfully!')
             return redirect('scheduling:calendar')
     else:
         # prefill timezone with user's preference
-        form = EnhancedSessionForm(initial={'timezone': user_timezone})
+        form = EnhancedSessionForm(initial={'timezone': user_tz_str})
 
     return render(request, 'scheduling/schedule_session.html', {
         'form': form,
         'swap': swap,
         'suggestions': suggestions_local,
         'other_user': other_user,
-        'user_timezone': user_timezone,
+        'user_timezone': user_tz_str,
         'GOOGLE_MAPS_KEY': getattr(settings, 'GOOGLE_MAPS_API_KEY', ''),
     })
 
 @login_required
-def set_availability(request):
+def availability_settings(request):
     '''
     Lets users set their weekly recurring availability and scheduling preferences
     '''
@@ -242,6 +243,8 @@ def set_availability(request):
             if preferences_form.is_valid():
                 preferences_form.save()
                 messages.success(request, 'Scheduling preferences saved!')
+            else:
+                messages.error(request, f'Could not save: {preferences_form.errors}')
             return redirect('scheduling:availability')
         
         elif action == 'add_slot':
@@ -259,6 +262,9 @@ def set_availability(request):
             messages.success(request, 'Slot removed.')
             return redirect('scheduling:availability')
         
+    # refetch saved preferences
+    preferences.refresh_from_db()
+        
     return render(request, 'scheduling/availability.html', {
         'preferences': preferences,
         'preferences_form': SchedulingPreferenceForm(instance=preferences),
@@ -266,22 +272,6 @@ def set_availability(request):
         'slots': slots,
         'days': list(enumerate(DAYS)),
     })
-
-@login_required
-def api_set_timezone(request):
-    """Auto-saves user's detected browser timezone"""
-    if request.method == 'POST':
-        import json
-        import pytz
-        data = json.loads(request.body)
-        tz = data.get('timezone', 'UTC')
-        # Validate it's a real timezone
-        if tz in pytz.all_timezones:
-            preferences, _ = SchedulingPreference.objects.get_or_create(user=request.user)
-            preferences.timezone = tz
-            preferences.save()
-            return JsonResponse({'status': 'ok', 'timezone': tz})
-    return JsonResponse({'status': 'error'}, status=400)
 
 @login_required
 def api_check_conflict(request):
@@ -334,13 +324,13 @@ def api_get_suggestions(request):
     preferences, _ = SchedulingPreference.objects.get_or_create(user=request.user)
 
     suggestions = get_smart_suggestions(request.user, other_user)
-    user_timezone = preferences.timezone
+    user_tz_str = preferences.timezone
 
     return JsonResponse({
         'suggestions': [
             {
                 'utc': s.isoformat(),
-                'local': convert_to_user_timezone(s, user_timezone).strftime('%A, %d, %b at %H:%M'),
+                'local': convert_to_user_timezone(s, user_tz_str).strftime('%A, %d, %b at %H:%M'),
             }
             for s in suggestions
         ]

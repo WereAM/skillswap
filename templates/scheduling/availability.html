@@ -26,11 +26,11 @@
                 <div class="card-body">
                     <form method="POST">
                         {% csrf_token %}
-                        <input type="hidden" name="action" value="save_prefs">
+                        <input type="hidden" name="action" value="save_preferences">
 
                         <div class="mb-3">
                             <label class="form-label">Your Timezone</label>
-                            {{ preferences_form.timezone}}
+                            {{ preferences_form.timezone }}
                             <div class="form-text text-muted">
                                 All session times will be shown in this timezone.
                             </div>    
