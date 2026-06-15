@@ -243,9 +243,7 @@ def availability_settings(request):
             if preferences_form.is_valid():
                 preferences_form.save()
                 messages.success(request, 'Scheduling preferences saved!')
-                print(f"Saved timezone: {preferences.timezone}")
             else:
-                print(f"Form errors: {preferences_form.errors}")
                 messages.error(request, f'Could not save: {preferences_form.errors}')
             return redirect('scheduling:availability')
         
