@@ -64,7 +64,7 @@ INSTALLED_APPS = [
 ]
 
 # for django.contrib.sites
-SITE_ID = 1
+SITE_ID = 2
 
 # allauth configurations
 AUTHENTICATION_BACKENDS = [
