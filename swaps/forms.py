@@ -26,25 +26,6 @@ class SwapRequestForm(forms.ModelForm):
         ). select_related('skill')
         self.fields['offered_skill'].label = 'Skill you are offering'
 
-class SessionForm(forms.ModelForm):
-    class Meta:
-        model = Session
-        fields = ['scheduled_date', 'duration_minutes', 'meeting_link', 'notes']
-        widgets = {
-            'scheduled_date' : forms.DateTimeInput(
-                attrs={
-                    'type': 'datetime-local',
-                    'class' : 'form-control'
-                }
-            ),
-            'duration_minutes' : forms.NumberInput(attrs={'class': 'form-control'}),
-            'meeting_link' : forms.URLInput(attrs={'class': 'form-control'}),
-            'notes' : forms.Textarea(attrs={
-                'rows' : 3,
-                'class' : 'form-control'
-            }),
-        }
-
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review

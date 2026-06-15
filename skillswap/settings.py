@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     # added apps
     'accounts',
     'messaging',
+    'scheduling',
     'skills',
     'swaps',
 ]
@@ -99,6 +100,13 @@ ACCOUNT_LOGOUT_REDIRECT_URL = 'accounts:login'
 
 # auto create UserProfile after social login
 SOCIALACCOUNT_ADAPTER = 'accounts.adapters.SocialAccountAdapter'
+
+# google maps
+GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY', '')
+
+# google calendar OAuth
+GOOGLE_CALENDAR_CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID', '')
+GOOGLE_CALENDAR_CLIENT_SECRET = os.environ.get('GOOGLE_OAUTH_CLIENT_SECRET', '')
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
