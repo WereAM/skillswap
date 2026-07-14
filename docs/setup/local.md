@@ -1,6 +1,6 @@
 # Local Development Setup
 
-This guide walks you through setting up SkillSwap on your local machine for development.
+This guide walks you through setting up Allogami on your local machine for development.
 
 ## Prerequisites
 
@@ -112,7 +112,7 @@ In development, emails are printed to the terminal instead of being sent. When y
 
 ```
 Content-Type: text/plain; charset="utf-8"
-Subject: Verify your SkillSwap account
+Subject: Verify your Allogami account
 
 Hi testuser,
 

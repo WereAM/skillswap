@@ -4,7 +4,7 @@
 
 ## Vision
 
-SkillSwap aims to become the go-to platform for peer skill exchange, starting with university communities and expanding to cities, then globally. The long-term vision is a world where anyone can access any skill without financial barriers.
+Allogami aims to become the go-to platform for peer skill exchange, starting with university communities and expanding to cities, then globally. The long-term vision is a world where anyone can access any skill without financial barriers.
 
 ## Completed
 
@@ -76,7 +76,7 @@ SkillSwap aims to become the go-to platform for peer skill exchange, starting wi
 ### Monetisation
 - [ ] Premium verified profiles
 - [ ] Featured skill listings
-- [ ] SkillSwap Pro subscription (advanced analytics, priority support)
+- [ ] Allogami Pro subscription (advanced analytics, priority support)
 - [ ] White-label platform for universities and companies
 
 ### Platform Expansion

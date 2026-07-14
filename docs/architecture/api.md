@@ -1,6 +1,6 @@
 # URL/API Reference
 
-All URLs are server-rendered Django views returning HTML responses. SkillSwap does not currently have a REST API. This document covers all available URL endpoints.
+All URLs are server-rendered Django views returning HTML responses. Allogami does not currently have a REST API. This document covers all available URL endpoints.
 
 ## URL Namespaces
 
