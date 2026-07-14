@@ -190,7 +190,7 @@ a:hover { color: var(--teal-dark); }
     font-family: 'Ovo', sans-serif;
     font-size: 0.875rem;
     font-weight: 600;
-    color: var(--white) !important;
+    color: var(--text) !important;
     background: var(--teal);
     border: none;
     padding: 0.55rem 1.4rem;

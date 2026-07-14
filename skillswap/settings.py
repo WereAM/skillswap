@@ -147,7 +147,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://skillswap-web.up.railway.app',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
-    'allogami.com',
+    'http://allogami.com',
 ]
 
 # Database  
