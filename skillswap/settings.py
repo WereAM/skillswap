@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'skillswap-web.up.railway.app']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'skillswap-web.up.railway.app', 'allogami.com']
 
 # Add Railway domain to allowed hosts
 RAILWAY_HOST = os.environ.get('RAILWAY_STATIC_URL', '')
