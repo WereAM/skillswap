@@ -2,7 +2,7 @@
 
 ## System Architecture
 
-SkillSwap follows Django's MVT (Model-View-Template) architecture pattern across four independent Django apps, connected through a central project configuration.
+Allogami follows Django's MVT (Model-View-Template) architecture pattern across four independent Django apps, connected through a central project configuration.
 
 ## High Level Architecture
 

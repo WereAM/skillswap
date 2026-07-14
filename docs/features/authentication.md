@@ -2,7 +2,7 @@
 
 ## Overview
 
-SkillSwap uses a multi-layered authentication system built on Django's built-in `auth` module, extended with email verification and Google OAuth via `django-allauth`. The goal is to ensure every user on the platform is a real, verifiable person, which is essential for a trust-based community.
+Allogami uses a multi-layered authentication system built on Django's built-in `auth` module, extended with email verification and Google OAuth via `django-allauth`. The goal is to ensure every user on the platform is a real, verifiable person, which is essential for a trust-based community.
 
 ## How it Works
 
