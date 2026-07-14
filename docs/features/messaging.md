@@ -2,7 +2,7 @@
 
 ## Overview
 
-SkillSwap includes a direct messaging system allowing any two users to communicate privately. Messages are not tied to a specific swap. They're standalone conversations between users. This allows people to ask questions before requesting a swap, coordinate session details, or simply stay in touch after a successful exchange.
+Allogami includes a direct messaging system allowing any two users to communicate privately. Messages are not tied to a specific swap. They're standalone conversations between users. This allows people to ask questions before requesting a swap, coordinate session details, or simply stay in touch after a successful exchange.
 
 ## How it Works
 

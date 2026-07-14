@@ -20,11 +20,11 @@ def send_verification_email(user):
     )
 
     send_mail(
-        subject='Verify your SkillSwap account',
+        subject='Verify your Allogami account',
         message=f'''
         Hello there {user.first_name or user.username},
 
-        Welcome to SkillSwap! Please verify your email address by clicking the link below:
+        Welcome to Allogami! Please verify your email address by clicking the link below:
 
         {verification_url}
 
@@ -32,7 +32,7 @@ def send_verification_email(user):
 
         If you did not create an account, please ignore this email.
 
-        The SkillSwap Team
+        The Allogami Team
             ''',
             from_email = settings.DEFAULT_FROM_EMAIL,
             recipient_list = [user.email],
