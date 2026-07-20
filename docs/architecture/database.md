@@ -2,7 +2,7 @@
 
 ## Overview
 
-SkillSwap uses a relational database (PostgreSQL in production, SQLite in development). The schema is managed entirely through Django migrations.
+Allogami uses a relational database (PostgreSQL in production, SQLite in development). The schema is managed entirely through Django migrations.
 
 ## Entity Relationship Diagram
 
