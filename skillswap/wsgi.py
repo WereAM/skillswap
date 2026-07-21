@@ -1,5 +1,5 @@
 """
-WSGI config for skillswap project.
+WSGI config for Allogami project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

@@ -1,6 +1,6 @@
-# SkillSwap
+# Allogami
 
-SkillSwap is a community-driven web platform that enables peer-to-peer skill exchange without monetary transactions. Users list skills they can teach and skills they want to learn, connect with matching users, and arrange skill swap sessions.
+Allogami is a community-driven web platform that enables peer-to-peer skill exchange without monetary transactions. Users list skills they can teach and skills they want to learn, connect with matching users, and arrange skill swap sessions.
 
 ## Contents
 
