@@ -1,4 +1,5 @@
 asgiref==3.11.1
+attrs==26.1.0
 certifi==2026.4.22
 cffi==2.0.0
 charset-normalizer==3.4.7
@@ -6,7 +7,11 @@ cryptography==46.0.7
 dj-database-url==3.1.2
 Django==6.0.2
 django-allauth==65.16.1
+django-cors-headers==4.9.0
 django-environ==0.13.0
+djangorestframework==3.17.1
+djangorestframework_simplejwt==5.5.1
+drf-spectacular==0.30.0
 google-api-core==2.30.3
 google-api-python-client==2.196.0
 google-auth==2.52.0
@@ -16,6 +21,9 @@ googleapis-common-protos==1.75.0
 gunicorn==25.1.0
 httplib2==0.31.2
 idna==3.13
+inflection==0.5.1
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
 oauthlib==3.3.1
 packaging==26.0
 pillow==12.1.1
@@ -29,8 +37,11 @@ PyJWT==2.12.1
 pyparsing==3.3.2
 python-dotenv==1.2.1
 pytz==2026.2
+PyYAML==6.0.3
+referencing==0.37.0
 requests==2.33.1
 requests-oauthlib==2.0.0
+rpds-py==2026.6.3
 sqlparse==0.5.5
 tzdata==2025.3
 uritemplate==4.2.0

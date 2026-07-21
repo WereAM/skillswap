@@ -50,17 +50,22 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # allauth
-    'django.contrib.sites',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
+    "django.contrib.sites",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
     # added apps
-    'accounts',
-    'messaging',
-    'scheduling',
-    'skills',
-    'swaps',
+    "accounts",
+    "messaging",
+    "scheduling",
+    "skills",
+    "swaps",
+    # api
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "corsheaders",
+    "drf_spectacular",
 ]
 
 # for django.contrib.sites
@@ -109,6 +114,7 @@ GOOGLE_CALENDAR_CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID', '')
 GOOGLE_CALENDAR_CLIENT_SECRET = os.environ.get('GOOGLE_OAUTH_CLIENT_SECRET', '')
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     'whitenoise.middleware.WhiteNoiseMiddleware',
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -248,3 +254,56 @@ else:
 
 # Front-end URL for the verification links
 FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://127.0.0.1:8000')
+
+# REST Framework configuration
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        # JWT for API clients
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # Session auth for browsable API in browser
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    "DEFAULT_THROTTLE_CLASSES": [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    # Rate limiting
+    "DEFAULT_THROTTLE_RATES": {
+        'anon': '10/hour',
+        'user': '100/hour',
+    },
+    "DEFAULT_SCHEMA_CLASS": 'drf_spectacular.openapi.AutoSchema',
+}
+
+# CORS
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',      # React dev
+    'http://localhost:5173',      # Vite dev
+    'https://allogami.com',       # production frontend
+]
+
+# allowed public origins
+CORS_URLS_REGEX = r'^/api/.*$'
+
+# JWT Settings
+from datetime import timedelta
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+    "ROTATE_REFRESH_TOKENS": True,
+}
+
+# API Documentation
+SPECTACULAR_SETTINGS = {
+    "TITLE": 'ChronoGami: Scheduling API',
+    "DESCRIPTION": 'Smart scheduling engine for interactive sessions. '
+                    'Provides calendar conflict detection, smart time zone aware suggestions, '
+                    'availability prediction and management, and Google Calendar integration.',
+    "VERSION": '1.0.0',
+    "CONTACT": {'email': 'api@chronogami.com'},
+    "LICENSE": {'name': 'MIT'},
+    "SERVE_INCLUDE_SCHEMA": False,
+}
