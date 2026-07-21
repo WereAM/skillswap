@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 import pytz
+import secrets
 
 TIMEZONE_CHOICES = [(tz, tz) for tz in pytz.all_timezones]
 
@@ -47,3 +48,30 @@ class AvailabilitySlots(models.Model):
     def __str__(self):
         day = dict(DAYS_OF_WEEK)[self.day_of_week]
         return f'{self.user.username}: {day} {self.start_time} - {self.end_time}'
+    
+class APIClient(models.Model):
+    """
+    Each external client/app/developer gets a unique API key for authentication.
+    """
+
+    owner = models.ForeignKey(
+        User, on_delete=models.CASCADE,
+        related_name='api_clients'
+    )
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    api_key = models.CharField(max_length=64, unique=True, editable=False)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    # track usage
+    request_count = models.PositiveIntegerField(default=0)
+    last_used = models.DateTimeField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        # auto generate API key on creation
+        if not self.api_key:
+            self.api_key = secrets.token_urlsafe(48)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'{self.name} ({self.owner.username})'
