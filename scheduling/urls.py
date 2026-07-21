@@ -11,6 +11,6 @@ urlpatterns = [
     # availability and preferences
     path('availability/', views.availability_settings, name='availability'),
     # AJAX/API endpoints
-    path('api/check-conflict/', views.api_check_conflict, name='api_check_conflict'),
-    path('api/get_suggestions/', views.api_get_suggestions, name='api_get_suggestions'),
+    path('chronogami/check-conflict/', views.api_check_conflict, name='api_check_conflict'),
+    path('chronogami/get_suggestions/', views.api_get_suggestions, name='api_get_suggestions'),
 ]
