@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from scheduling.models import AvailabilitySlots, SchedulingPreference, APIClient
 from swaps.models import Session
+import pytz
 
 class AvailabilitySlotsSerializer(serializers.ModelSerializer):
     """
@@ -38,7 +39,7 @@ class TimeSuggestionSerializer(serializers.Serializer):
         max_value = 20,
         help_text = "Number of suggestions to return (1-20)"
     )
-    after_datetime = serializers.DateTime(
+    after_datetime = serializers.DateTimeField(
         required = False,
         help_text = "Only suggest times after this date and time (ISO 8601, UTC)"
     )
