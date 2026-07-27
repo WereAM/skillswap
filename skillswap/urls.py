@@ -1,5 +1,5 @@
 """
-URL configuration for allogami project.
+URL configuration for Allogami project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/6.0/topics/http/urls/
@@ -19,6 +19,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from drf_spectacular.views import (
+    SpectacularAPIView, 
+    SpectacularRedocView, 
+    SpectacularSwaggerView, 
+)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -29,4 +34,11 @@ urlpatterns = [
     path("skills/", include('skills.urls')),
     path("swaps/", include('swaps.urls')),
     path("schedule/", include('scheduling.urls')),
+
+    # PUBLIC API
+    path('chronogami/v1/', include('scheduling.chronogami.urls')),
+    # API Documentation
+    path('chronogami/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('chronogami/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('chronogami/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
