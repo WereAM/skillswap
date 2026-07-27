@@ -103,7 +103,7 @@ class RegisterAPIClientView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# SCEDULING ENDPOINTS
+# SCHEDULING ENDPOINTS
 class SuggestTimesView(APIView):
     """
     POST /chronogami/v1/scheduling/suggest/
@@ -412,23 +412,3 @@ class TimezoneListView(APIView):
             'grouped': grouped,
             'flat': pytz.common_timezones,
         })
-
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def suggest_times(request):
-    '''
-    GET /chronogami/scheduling/suggest/?swap+pk=1&duration=60
-    Returns smart time suggestions for two users
-    '''
-    ...
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def check_conflict_api(request):
-    '''
-    POST /chronogami/scheduling/conflicts/
-    Body: {datetime, duration, timezone}
-    Returns conflict status
-    '''
-    ...
