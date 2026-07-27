@@ -402,7 +402,7 @@ class TimezoneListView(APIView):
         # group by region
         grouped = {}
         for tz in pytz.common_timezones:
-            region = tz.split('/')[0] if '/' in timezone else 'Other'
+            region = tz.split('/')[0] if '/' in tz else 'Other'
             if region not in grouped:
                 grouped[region] = []
             grouped[region].append(tz)
